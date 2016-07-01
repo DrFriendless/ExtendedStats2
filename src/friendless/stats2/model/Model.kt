@@ -1,0 +1,39 @@
+package friendless.stats2.model
+
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import org.jetbrains.exposed.sql.Column
+
+/**
+ * Created by john on 30/06/16.
+ */
+interface ModelObject {
+    fun <T> get(key: Column<T>): Any
+
+    fun toJson(vararg omit: Column<*>): JsonObject
+}
+
+fun toJson(mo: ModelObject, columns: Iterable<Column<*>>, vararg omit: Column<*>): JsonObject {
+    val result = JsonObject()
+    columns.forEach {
+        if (!omit.contains(it)) {
+            val v = mo.get(it)
+            when (v) {
+                is String -> result.addProperty(it.name, v)
+                is Char -> result.addProperty(it.name, v)
+                is Number -> result.addProperty(it.name, v)
+                is Boolean -> result.addProperty(it.name, v)
+            }
+        }
+    }
+    return result
+}
+
+fun toJson(games: Iterable<ModelObject>, vararg omit: Column<*>): JsonArray {
+    val result = JsonArray()
+    games.forEach {
+        result.add(it.toJson(*omit))
+    }
+    return result
+}
+
