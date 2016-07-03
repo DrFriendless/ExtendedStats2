@@ -27,8 +27,9 @@ fun main(args: Array<String>) {
                 response.setStatus(StatusCodes.BadRequest)
             } else {
                 val substrate = Substrate(config)
+
                 val q = request.queryParams["q"] ?: "all"
-                val selector = parseSelector(substrate, q)
+                val selector = parseSelector(substrate, q, userId)
                 response.send(JsonHandler(substrate).geekGames(selector).toString(), "application/json")
             }
         } catch (e: Throwable) {
@@ -39,7 +40,7 @@ fun main(args: Array<String>) {
         try {
             val q = request.queryParams["q"] ?: "all"
             val substrate = Substrate(config)
-            val selector = parseSelector(substrate, q)
+            val selector = parseSelector(substrate, q, null)
 //                val selector = GameSelectorForGeekGames(substrate, RatedSelector(substrate, userId))
             response.send(JsonHandler(substrate).games(selector).toString(), "application/json")
         } catch (e: Throwable) {
