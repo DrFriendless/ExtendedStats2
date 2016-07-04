@@ -1,0 +1,41 @@
+<html ng-app="collection">
+<head>
+    <meta charset="utf-8">
+    <title>IDR</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/sandstone/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/stats2.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+    <script src="/js/collection.js"></script>
+</head>
+<body>
+<div ng-controller="CollectionCtrl">
+    <H1>Collection for {{geek}}</H1>
+    <table>
+        <thead><tr>
+            <th>
+            <A HREF="#" ng-click="sortType = 'name'; sortReverse=!sortReverse">
+                Name
+                <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-down"></span>
+                <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-up"></span>
+            </A>
+            </th>
+            <th>
+                <A HREF="#" ng-click="sortType = 'rating'; sortReverse=!sortReverse">
+                    Rating
+                    <span ng-show="sortType == 'rating' && sortReverse" class="fa fa-caret-down"></span>
+                    <span ng-show="sortType == 'rating' && !sortReverse" class="fa fa-caret-up"></span>
+                </A>
+            </th>
+        </tr></thead>
+        <tbody>
+        <tr ng-repeat="row in data">
+            <td>{{row.name}}</td>
+            <td>{{row.rating}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

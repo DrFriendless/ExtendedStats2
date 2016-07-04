@@ -46,6 +46,35 @@ fun main(args: Array<String>) {
             logger.error("Brekon", e)
         }
     })
+    server.get("/js/:file", {
+        try {
+            response.setFileResponseHeaders(serveFile(request.path), "application/javascript")
+        } catch (e: Throwable) {
+            logger.error("Brkoon", e)
+        }
+    })
+    server.get("/css/:file", {
+        try {
+            response.setFileResponseHeaders(serveFile(request.path), "text/css")
+        } catch (e: Throwable) {
+            logger.error("Brokon", e)
+        }
+    })
+    server.get("/collection/:userid", {
+        try {
+            response.setFileResponseHeaders(serveFile("/html/collection.html"), "text/html")
+        } catch (e: Throwable) {
+            logger.error("Broken", e)
+        }
+    })
+
     logger.info("Starting Stats2Server")
     server.start()
 }
+
+fun serveFile(path: String): String {
+    val u = Substrate::class.java.getResource(path)
+    return u?.file ?: "html/error.html"
+}
+
+
