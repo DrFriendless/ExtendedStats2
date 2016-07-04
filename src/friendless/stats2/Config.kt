@@ -12,6 +12,7 @@ class Config() {
     val dbHost: String by prop
     val dbPort: String by prop
     val dbName: String by prop
+    val serverTimeZone: String by prop
 
     init {
         Config::class.java.getResourceAsStream("/config.properties").use {

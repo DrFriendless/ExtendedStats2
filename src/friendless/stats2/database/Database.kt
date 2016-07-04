@@ -8,8 +8,8 @@ import org.jetbrains.exposed.sql.*
  */
 class Database(config: Config) {
     init {
-        val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}"
-        val db = org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.jdbc.Driver", config.dbUser, config.dbPasswd)
+        val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
+        val db = org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
     }
 
     fun readTable(table: Table, where: Op<Boolean>): Pair<String, List<Pair<String, List<Pair<String, String>>>>> {
