@@ -45,6 +45,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.3</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-reflect -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>1.0.3</version>
+        </dependency>
     </dependencies>
 
     <groupId>com.github.drfriendless</groupId>
