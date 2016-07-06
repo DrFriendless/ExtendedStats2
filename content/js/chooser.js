@@ -21,10 +21,21 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             vm.players = vm.geeks.filter(function(geek) { return geek.username == $scope.geek });
         });
     };
-    $scope.loadGeeks();
     vm.getPlayers = function() {
         return vm.players.map(function(geek) { return geek.username });
-    }
+    };
+    vm.baseOptions = [
+        { "name": "Owned by any player"},
+        { "name": "Any game at all"}
+    ];
+    vm.baseGames = {};
+    vm.evaluationOptions = [
+        { "name": "Highest Total Rating"},
+        { "name": "Highest Minimum Rating"},
+        { "name": "Total Plays"}
+    ];
+    vm.evaluationFunction = {};
+    $scope.loadGeeks();
 }
 
 app.controller('ChooserCtrl', ChooserCtrl);

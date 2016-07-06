@@ -19,19 +19,76 @@
         .btn {
             text-transform: none;
         }
+        #config {
+            float: right;
+        }
+        #games {
+            width: 300px;
+        }
+        #result {
+            width: 300px;
+        }
+        #columns {
+            background-color: transparent;
+        }
+        #playersSelect {
+            width: 300px;
+        }
     </style>
 </head>
 <body>
-<h3>Players</h3>
 <div ng-controller="ChooserCtrl as ctrl">
-    <ui-select multiple ng-model="ctrl.players" theme="bootstrap" ng-disabled="ctrl.disabled" close-on-select="true" style="width: 300px;" title="Choose players">
-        <ui-select-match placeholder="Select players...">{{$item.username}}</ui-select-match>
-        <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
-            {{geek.username}}
-        </ui-select-choices>
-    </ui-select>
-    <p>Selected: {{ctrl.getPlayers()}}</p>
-    <hr>
+    <table>
+        <tr id="columns">
+            <td>
+                <div id="games">
+                    <H2>Games</H2>
+                    <table>
+                    </table>
+                </div>
+            </td>
+            <td>
+                <div id="result">
+                    <H2>Result</H2>
+                    <table>
+                    </table>
+                </div>
+            </td>
+            <td>
+                <div id="config">
+                    <H3>Collection</H3>
+                    <!-- Choose the base set of games -->
+                    <select
+                            id="baseSelect"
+                            ng-init="ctrl.baseGames = ctrl.baseOptions[0]"
+                            ng-model="ctrl.baseGames"
+                            ng-options="option.name for option in ctrl.baseOptions"
+                            title="Set of games to choose from">
+                    </select>
+
+                    <h3>Players</h3>
+                    <!-- Select some players -->
+                    <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" close-on-select="true" title="Players who will play">
+                        <ui-select-match placeholder="Select players...">{{$item.username}}</ui-select-match>
+                        <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
+                            {{geek.username}}
+                        </ui-select-choices>
+                    </ui-select>
+                    <!-- TODO: number of players -->
+
+                    <H3>Criteria</H3>
+                    <!-- Choose the evaluation function -->
+                    <select
+                            id="evalSelect"
+                            ng-init="ctrl.evaluationFunction = ctrl.evaluationOptions[0]"
+                            ng-model="ctrl.evaluationFunction"
+                            ng-options="option.name for option in ctrl.evaluationOptions"
+                            title="Evaluation criteria">
+                    </select>
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
 </body>
 </html>
