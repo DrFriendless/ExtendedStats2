@@ -36,6 +36,14 @@ fun main(args: Array<String>) {
             logger.error("Brkoen", e)
         }
     })
+    server.get("/json/geeks", {
+        try {
+            val substrate = Substrate(config)
+            response.send(JsonHandler(substrate).geeks().toString(), "application/json")
+        } catch (e: Throwable) {
+            logger.error("Brooken", e)
+        }
+    })
     server.get("/json/games", {
         try {
             val q = request.queryParams["q"] ?: "all"

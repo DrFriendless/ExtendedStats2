@@ -4,7 +4,9 @@ import friendless.stats2.Config
 import friendless.stats2.database.Database
 import friendless.stats2.database.Games
 import friendless.stats2.database.GeekGames
+import friendless.stats2.database.Geeks
 import friendless.stats2.model.Game
+import friendless.stats2.model.Geek
 import friendless.stats2.model.GeekGame
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -12,10 +14,21 @@ import org.jetbrains.exposed.sql.transactions.transaction
 /**
  * Created by john on 30/06/16.
  */
-class Substrate(config: Config) {
-    private val database = Database(config)
+class Substrate(config: Config): Database(config) {
     private val geekGamesByGeek: MutableMap<String, Iterable<GeekGame>> = hashMapOf();
     private val gamesByBggid: MutableMap<Int, Game> = hashMapOf();
+    private var geeks: MutableList<Geek> = mutableListOf();
+
+    fun getAllGeeks(): Iterable<Geek> {
+        synchronized(geeks) {
+            if (geeks.isEmpty()) {
+                geeks.addAll(transaction {
+                    Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }
+                })
+            }
+        }
+        return geeks
+    }
 
     fun collection(geek: String): Iterable<GeekGame> {
         synchronized(geekGamesByGeek) {

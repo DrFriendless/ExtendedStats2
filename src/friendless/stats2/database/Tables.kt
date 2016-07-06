@@ -24,3 +24,7 @@ object Games: Table("games") {
     val bggid = integer("bggid")
     val name = varchar("name", 256)
 }
+
+object Geeks: Table("geeks") {
+    val username = varchar("username", 128)
+}

@@ -1,9 +1,12 @@
 package friendless.stats2.httpd.handlers
 
+import com.github.salomonbrys.kotson.jsonArray
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import friendless.stats2.database.GeekGames
 import friendless.stats2.model.ModelObject
 import friendless.stats2.model.toJson
@@ -29,5 +32,11 @@ class JsonHandler(val substrate: Substrate) {
             jo["name"] = gamesById[jo[GeekGames.game.name].asInt]?.name
         }
         return ggs
+    }
+
+    fun geeks(): JsonElement {
+        return jsonObject(
+                "geeks" to jsonArray(substrate.getAllGeeks().map { it.toJson() })
+        )
     }
 }

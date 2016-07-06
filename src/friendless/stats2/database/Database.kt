@@ -6,15 +6,10 @@ import org.jetbrains.exposed.sql.*
 /**
  * Created by john on 29/06/16.
  */
-class Database(config: Config) {
+open class Database(config: Config) {
     init {
         val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
-        val db = org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
-    }
-
-    fun readTable(table: Table, where: Op<Boolean>): Pair<String, List<Pair<String, List<Pair<String, String>>>>> {
-        table.select(where)
-        return Pair(table.tableName, listOf())
+        org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
     }
 }
 

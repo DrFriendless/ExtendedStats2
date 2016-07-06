@@ -8,10 +8,10 @@ import org.jetbrains.exposed.sql.ResultRow
 /**
  * Created by john on 30/06/16.
  */
-class GeekGame(var geek: String, var game: Int, var rating: Double,
-               var owned: Boolean, var want: Boolean, var trade: Boolean,
-               var wish: Int, var comment: String, var prevowned: Boolean,
-               var wanttobuy: Boolean, var wanttoplay: Boolean, var preordered: Boolean): ModelObject {
+class GeekGame(val geek: String, val game: Int, val rating: Double,
+               val owned: Boolean, val want: Boolean, val trade: Boolean,
+               val wish: Int, val comment: String, val prevowned: Boolean,
+               val wanttobuy: Boolean, val wanttoplay: Boolean, val preordered: Boolean): ModelObject {
     constructor(row: ResultRow): this(
             row[GeekGames.geek],
             row[GeekGames.game],
