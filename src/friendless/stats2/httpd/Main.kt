@@ -67,6 +67,13 @@ fun main(args: Array<String>) {
             logger.error("Broken", e)
         }
     })
+    server.get("/chooser/:userid", {
+        try {
+            response.setFileResponseHeaders(serveFile("/html/chooser.html"), "text/html")
+        } catch (e: Throwable) {
+            logger.error("Broken", e)
+        }
+    })
 
     logger.info("Starting Stats2Server")
     server.start()
