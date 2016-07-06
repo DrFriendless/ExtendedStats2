@@ -3,7 +3,7 @@ package friendless.stats2
 import java.util.*
 
 /**
- * Created by john on 29/06/16.
+ * The config file which tells us about the environment we're hosted in.
  */
 class Config() {
     val prop = Properties()

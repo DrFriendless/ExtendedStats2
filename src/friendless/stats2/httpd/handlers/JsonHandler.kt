@@ -14,7 +14,7 @@ import friendless.stats2.selectors.Selector
 import friendless.stats2.substrate.Substrate
 
 /**
- * Created by john on 29/06/16.
+ * Handler for requests which return JSON.
  */
 class JsonHandler(val substrate: Substrate) {
     fun geekGames(selector: Selector<ModelObject>, geek: String): JsonElement {
@@ -25,13 +25,13 @@ class JsonHandler(val substrate: Substrate) {
         return toJson(selector.select(geek))
     }
 
-    private fun postProcess(ggs: JsonArray): JsonArray {
-        val gamesById = substrate.games(ggs.map { (it as JsonObject)[GeekGames.game.name].asInt })
-        ggs.forEach {
+    private fun postProcess(geekgames: JsonArray): JsonArray {
+        val gamesById = substrate.games(geekgames.map { (it as JsonObject)[GeekGames.game.name].asInt })
+        geekgames.forEach {
             val jo = it as JsonObject
             jo["name"] = gamesById[jo[GeekGames.game.name].asInt]?.name
         }
-        return ggs
+        return geekgames
     }
 
     fun geeks(): JsonElement {

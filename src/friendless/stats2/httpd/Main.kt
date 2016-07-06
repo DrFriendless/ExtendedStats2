@@ -2,12 +2,27 @@ package friendless.stats2.httpd
 
 import friendless.stats2.Config
 import friendless.stats2.httpd.handlers.JsonHandler
-import friendless.stats2.selectors.*
+import friendless.stats2.selectors.parseSelector
 import friendless.stats2.substrate.Substrate
 import org.slf4j.LoggerFactory
 import org.wasabi.app.AppConfiguration
 import org.wasabi.app.AppServer
 import org.wasabi.http.StatusCodes
+
+fun AppServer.getLogError(path: kotlin.String, vararg handlers: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): kotlin.Unit {
+    val logger = LoggerFactory.getLogger("handler")
+    fun wrap(f: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): org.wasabi.routing.RouteHandler.() -> kotlin.Unit {
+        return {
+            try {
+                f()
+            } catch (e: Throwable) {
+                logger.error("Broken", e)
+            }
+        }
+    }
+    val wrapped = handlers.map { wrap(it) }.toTypedArray()
+    this.get(path, *wrapped)
+}
 
 /**
  * Created by john on 29/06/16.
@@ -20,67 +35,43 @@ fun main(args: Array<String>) {
     server.get("/", {
         response.send("Hello World!")
     })
-    server.get("/json/geekgames/:userid", {
-        try {
-            val userId = request.routeParams["userid"]
-            if (userId == null) {
-                response.setStatus(StatusCodes.BadRequest)
-            } else {
-                val substrate = Substrate(config)
+    server.getLogError("/json/geekgames/:userid", {
+        val userId = request.routeParams["userid"]
+        if (userId == null) {
+            response.setStatus(StatusCodes.BadRequest)
+        } else {
+            val substrate = Substrate(config)
 
-                val q = request.queryParams["q"] ?: "all"
-                val selector = parseSelector(substrate, q)
-                response.send(JsonHandler(substrate).geekGames(selector, userId).toString(), "application/json")
-            }
-        } catch (e: Throwable) {
-            logger.error("Brkoen", e)
-        }
-    })
-    server.get("/json/geeks", {
-        try {
-            val substrate = Substrate(config)
-            response.send(JsonHandler(substrate).geeks().toString(), "application/json")
-        } catch (e: Throwable) {
-            logger.error("Brooken", e)
-        }
-    })
-    server.get("/json/games", {
-        try {
             val q = request.queryParams["q"] ?: "all"
-            val substrate = Substrate(config)
             val selector = parseSelector(substrate, q)
-            response.send(JsonHandler(substrate).games(selector, null).toString(), "application/json")
-        } catch (e: Throwable) {
-            logger.error("Brekon", e)
+            response.send(JsonHandler(substrate).geekGames(selector, userId).toString(), "application/json")
         }
     })
-    server.get("/js/:file", {
-        try {
-            response.setFileResponseHeaders(serveFile(request.path), "application/javascript")
-        } catch (e: Throwable) {
-            logger.error("Brkoon", e)
-        }
+    server.getLogError("/json/geeks", {
+        val substrate = Substrate(config)
+        response.send(JsonHandler(substrate).geeks().toString(), "application/json")
     })
-    server.get("/css/:file", {
-        try {
-            response.setFileResponseHeaders(serveFile(request.path), "text/css")
-        } catch (e: Throwable) {
-            logger.error("Brokon", e)
-        }
+    server.getLogError("/json/games", {
+        val q = request.queryParams["q"] ?: "all"
+        val substrate = Substrate(config)
+        val selector = parseSelector(substrate, q)
+        response.send(JsonHandler(substrate).games(selector, null).toString(), "application/json")
     })
-    server.get("/collection/:userid", {
-        try {
-            response.setFileResponseHeaders(serveFile("/html/collection.html"), "text/html")
-        } catch (e: Throwable) {
-            logger.error("Broken", e)
-        }
+    // static javascript files
+    server.getLogError("/js/:file", {
+        response.setFileResponseHeaders(serveFile(request.path), "application/javascript")
     })
-    server.get("/chooser/:userid", {
-        try {
-            response.setFileResponseHeaders(serveFile("/html/chooser.html"), "text/html")
-        } catch (e: Throwable) {
-            logger.error("Broken", e)
-        }
+    // static CSS files
+    server.getLogError("/css/:file", {
+        response.setFileResponseHeaders(serveFile(request.path), "text/css")
+    })
+    // HTML for a user's collection
+    server.getLogError("/collection/:userid", {
+        response.setFileResponseHeaders(serveFile("/html/collection.html"), "text/html")
+    })
+    // HTML for the Chooser application
+    server.getLogError("/chooser/:userid", {
+        response.setFileResponseHeaders(serveFile("/html/chooser.html"), "text/html")
     })
 
     logger.info("Starting Stats2Server")

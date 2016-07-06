@@ -4,7 +4,7 @@ import friendless.stats2.Config
 import org.jetbrains.exposed.sql.*
 
 /**
- * Created by john on 29/06/16.
+ * Connecting to the database and enhancing the given functionality. Nothing appliocation-specific here.
  */
 open class Database(config: Config) {
     init {

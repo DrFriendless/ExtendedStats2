@@ -8,7 +8,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.primaryConstructor
 
 /**
- * Created by john on 30/06/16.
+ * A selector is essentially an expresion which can be evaluated against the database to select a set of games.
+ * Currently I have two types of selectors: those that return games, and those that return geekgames (games associated
+ * with a user). An example of first is "games design by Reiner Knizia" and of the second "games that Eduardo rates 8
+ * or higher". For the first we return information only about the game, for the second we return information about
+ * the user's interactions with the games. So far I'm not seeing the value in the distinction so this may change.
  */
 abstract class Selector<out T>(val substrate: Substrate) {
     abstract fun select(geek: String?): Iterable<T>

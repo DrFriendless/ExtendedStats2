@@ -3,7 +3,8 @@ package friendless.stats2.database
 import org.jetbrains.exposed.sql.Table
 
 /**
- * Created by john on 29/06/16.
+ * Definitions of tables. Note that we don't create the schema in this project, the schema already exists and is
+ * populated by the downloader component of https://github.com/DrFriendless/ExtendedStats.
  */
 object GeekGames: Table("geekgames") {
     val geek = varchar("geek", 128)
