@@ -23,10 +23,10 @@
             float: right;
         }
         #games {
-            width: 300px;
+            width: 500px;
         }
         #result {
-            width: 300px;
+            width: 500px;
         }
         #columns {
             background-color: transparent;
@@ -43,6 +43,7 @@
             <td>
                 <div id="games">
                     <H2>Games</H2>
+                    Showing {{ctrl.baseGames.length}} of {{ctrl.baseGameCount}}...
                     <table>
                         <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A></TD>
@@ -53,7 +54,11 @@
             <td>
                 <div id="result">
                     <H2>Result</H2>
+                    Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
                     <table>
+                        <tr ng-repeat="game in ctrl.bestGames">
+                            <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A></TD>
+                        </tr>
                     </table>
                 </div>
             </td>

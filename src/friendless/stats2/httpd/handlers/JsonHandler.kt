@@ -17,21 +17,8 @@ import friendless.stats2.substrate.Substrate
  * Handler for requests which return JSON.
  */
 class JsonHandler(val substrate: Substrate) {
-    fun geekGames(selector: Selector): JsonElement {
-        return postProcess(toJson(selector.select(), GeekGames.geek))
-    }
-
     fun games(selector: Selector): JsonElement {
         return toJson(selector.select())
-    }
-
-    private fun postProcess(geekgames: JsonArray): JsonArray {
-        val gamesById = substrate.games(geekgames.map { (it as JsonObject)[GeekGames.game.name].asInt })
-        geekgames.forEach {
-            val jo = it as JsonObject
-            jo["name"] = gamesById[jo[GeekGames.game.name].asInt]?.name
-        }
-        return geekgames
     }
 
     fun geeks(): JsonElement {

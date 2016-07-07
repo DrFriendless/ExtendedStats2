@@ -10,6 +10,8 @@ import org.jetbrains.exposed.sql.ResultRow
  */
 class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers: Int,
            val geekGames: MutableMap<String, GeekGame> = mutableMapOf<String, GeekGame>()): ModelObject {
+    var score = 0
+
     constructor(row: ResultRow): this(
             row[Games.bggid],
             row[Games.name],

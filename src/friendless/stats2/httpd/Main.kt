@@ -6,10 +6,10 @@ import friendless.stats2.httpd.handlers.JsonHandler
 import friendless.stats2.model.toJson
 import friendless.stats2.selectors.parseSelector
 import friendless.stats2.substrate.Substrate
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.wasabi.app.AppConfiguration
 import org.wasabi.app.AppServer
-import org.wasabi.http.StatusCodes
 
 fun AppServer.getLogError(path: kotlin.String, vararg handlers: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): kotlin.Unit {
     val logger = LoggerFactory.getLogger("handler")
@@ -37,18 +37,6 @@ fun main(args: Array<String>) {
     server.get("/", {
         response.send("Hello World!")
     })
-    server.getLogError("/json/geekgames/:userid", {
-        val userId = request.routeParams["userid"]
-        if (userId == null) {
-            response.setStatus(StatusCodes.BadRequest)
-        } else {
-            val substrate = Substrate(config)
-
-            val q = request.queryParams["q"] ?: "all"
-            val selector = parseSelector(substrate, q)
-            response.send(JsonHandler(substrate).geekGames(selector).toString(), "application/json")
-        }
-    })
     server.getLogError("/json/geeks", {
         val substrate = Substrate(config)
         response.send(JsonHandler(substrate).geeks().toString(), "application/json")
@@ -57,10 +45,12 @@ fun main(args: Array<String>) {
         val q = request.queryParams["q"] ?: "all"
         val substrate = Substrate(config)
         val selector = parseSelector(substrate, q)
-        val games = selector.select().toList()
-        val truncated = if (games.size > 100) games.subList(0, 100) else games
-        val result = jsonObject("count" to games.size, "games" to toJson(truncated))
-        response.send(result.toString(), "application/json")
+        transaction {
+            val games = selector.select().toList()
+            val truncated = if (games.size > 100) games.subList(0, 100) else games
+            val result = jsonObject("count" to games.size, "games" to toJson(truncated))
+            response.send(result.toString(), "application/json")
+        }
     })
     // static javascript files
     server.getLogError("/js/:file", {

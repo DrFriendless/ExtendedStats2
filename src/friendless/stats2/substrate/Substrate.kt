@@ -16,13 +16,17 @@ class Substrate(config: Config): Database(config) {
     private val geekGamesByGeek: MutableMap<String, Iterable<Game>> = hashMapOf()
     private val gamesByBggid: MutableMap<Int, Game> = hashMapOf()
     val geeks: Iterable<Geek> by lazy {
-        transaction {
-            Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }.toList()
+        synchronized(this) {
+            transaction {
+                Geeks.slice(Geeks.username).selectAll().map { row -> Geek(row) }.toList()
+            }
         }
     }
-    val expansions: Iterable<Int> by lazy {
-        transaction {
-            Expansions.slice(Expansions.expansion).selectAll().distinct().map { row -> row[Expansions.expansion] }.toList()
+    val expansions: Set<Int> by lazy {
+        synchronized(this) {
+            transaction {
+                Expansions.slice(Expansions.expansion).selectAll().distinct().map { row -> row[Expansions.expansion] }.toSet()
+            }
         }
     }
 
@@ -30,13 +34,10 @@ class Substrate(config: Config): Database(config) {
         synchronized(geekGamesByGeek) {
             var games = geekGamesByGeek[geek]
             if (games == null) {
-                val collection = transaction {
-                    GeekGames.
-                            slice(GeekGames.columns).
-                            select { GeekGames.geek eq geek }.
-                            map { row -> GeekGame(row) }.
-                            toList()
-                }
+                val collection = GeekGames.
+                        slice(GeekGames.columns).
+                        select { GeekGames.geek eq geek }.
+                        map { row -> GeekGame(row) }
                 val ggByGameId = collection.associate { it.game to it }
                 games = games(ggByGameId.keys).values
                 geekGamesByGeek[geek] = games
@@ -49,27 +50,24 @@ class Substrate(config: Config): Database(config) {
         }
     }
 
-    fun games(bggids: Iterable<Int>): Map<Int, Game> {
+    fun games(bggids: Set<Int>): Map<Int, Game> {
         synchronized(gamesByBggid) {
             val toGet = bggids.filter { !gamesByBggid.containsKey(it) }
             if (!toGet.isEmpty()) {
-                val games = transaction {
-                    Games.
-                            slice(Games.columns).
-                            select { InListOrNotInListOp(Games.bggid, toGet) }
-                            .map { row -> Game(row) }
-                }
+                val games = Games.
+                        slice(Games.columns).
+                        select { InListOrNotInListOp(Games.bggid, toGet) }.
+                        map { row -> Game(row) }
                 games.forEach { gamesByBggid[it.bggid] = it }
+                toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6) }
             }
-            toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6) }
             return bggids.associate { it.to(gamesByBggid[it]!!) }
         }
     }
 
     fun gamesWhere(where: SqlExpressionBuilder.()->Op<Boolean>): Iterable<Game> {
-        val bggIds = transaction {
-            Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }
-        }
+        val bggIds =
+                Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }.toSet()
         return games(bggIds).values
     }
 }
