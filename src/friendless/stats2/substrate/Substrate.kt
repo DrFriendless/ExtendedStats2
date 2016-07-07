@@ -17,17 +17,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class Substrate(config: Config): Database(config) {
     private val geekGamesByGeek: MutableMap<String, Iterable<GeekGame>> = hashMapOf();
     private val gamesByBggid: MutableMap<Int, Game> = hashMapOf();
-    private var geeks: MutableList<Geek> = mutableListOf();
-
-    fun getAllGeeks(): Iterable<Geek> {
-        synchronized(geeks) {
-            if (geeks.isEmpty()) {
-                geeks.addAll(transaction {
-                    Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }
-                })
-            }
+    val geeks: Iterable<Geek> by lazy {
+        transaction {
+            Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }
         }
-        return geeks
     }
 
     fun collection(geek: String): Iterable<GeekGame> {

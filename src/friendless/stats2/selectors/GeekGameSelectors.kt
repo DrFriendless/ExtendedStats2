@@ -20,14 +20,10 @@ open class AllSelector(substrate: Substrate):
 
 val OWNED_SELECTOR_DESCRIPTOR = SelectorDescriptor("owned", 0, 0, OwnedSelector::class, SelectorType.GEEKGAME)
 class OwnedSelector(substrate: Substrate): AllSelector(substrate) {
-    override fun select(geek: String?): Iterable<GeekGame> {
-        return super.select(geek).filter { it.owned }
-    }
+    override fun select(geek: String?): Iterable<GeekGame> = super.select(geek).filter { it.owned }
 }
 
 val RATED_SELECTOR_DESCRIPTOR = SelectorDescriptor("rated", 0, 0, RatedSelector::class, SelectorType.GEEKGAME)
 class RatedSelector(substrate: Substrate): AllSelector(substrate) {
-    override fun select(geek: String?): Iterable<GeekGame> {
-        return super.select(geek).filter { it.rating > 0.0 }
-    }
+    override fun select(geek: String?): Iterable<GeekGame> = super.select(geek).filter { it.rating > 0.0 }
 }

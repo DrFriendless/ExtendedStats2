@@ -36,7 +36,7 @@ class JsonHandler(val substrate: Substrate) {
 
     fun geeks(): JsonElement {
         return jsonObject(
-                "geeks" to jsonArray(substrate.getAllGeeks().map { it.toJson() })
+                "geeks" to jsonArray(substrate.geeks.map { it.toJson() })
         )
     }
 }

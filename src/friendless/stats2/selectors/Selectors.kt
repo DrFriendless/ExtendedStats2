@@ -53,9 +53,7 @@ class MinusSelector<out T>(substrate: Substrate, val right: Selector<T>, val lef
 val USER_SELECTOR_DESCRIPTOR = SelectorDescriptor("user", 1, 1, UserSelector::class, SelectorType.OPERATOR)
 class UserSelector<out T>(substrate: Substrate, val newGeek: String, val selector: Selector<T>):
         Selector<T>(substrate) {
-    override fun select(geek: String?): Iterable<T> {
-        return selector.select(newGeek)
-    }
+    override fun select(geek: String?): Iterable<T> = selector.select(newGeek)
 }
 
 val SELECTOR_DESCRIPTORS: List<SelectorDescriptor> = listOf(

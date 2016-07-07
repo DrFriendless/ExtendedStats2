@@ -7,11 +7,8 @@ var app = angular.module('chooser', ['ngSanitize', 'ui.select']);
 
 function ChooserCtrl($scope, $http, $timeout, $interval) {
     var vm = this;
-    $scope.data = [];
     var href = window.location.href;
     $scope.geek = href.substring(href.lastIndexOf("/")+1, href.length);
-    $scope.sortType = 'date';
-    $scope.sortReverse = false;
     $scope.loadGeeks = function() {
         var httpRequest = $http({
             method: 'GET',
