@@ -24,6 +24,8 @@ object GeekGames: Table("geekgames") {
 object Games: Table("games") {
     val bggid = integer("bggid")
     val name = varchar("name", 256)
+    val minPlayers = integer("minPlayers")
+    val maxPlayers = integer("maxPlayers")
 }
 
 object Geeks: Table("geeks") {

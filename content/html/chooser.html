@@ -45,7 +45,7 @@
                     <H2>Games</H2>
                     <table>
                         <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
-                            <TD>{{game.name}}</TD>
+                            <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A></TD>
                         </tr>
                     </table>
                 </div>

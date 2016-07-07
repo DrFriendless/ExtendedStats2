@@ -55,14 +55,21 @@ class Substrate(config: Config): Database(config) {
             if (!toGet.isEmpty()) {
                 val games = transaction {
                     Games.
-                            slice(Games.bggid, Games.name).
+                            slice(Games.columns).
                             select { InListOrNotInListOp(Games.bggid, toGet) }
                             .map { row -> Game(row) }
                 }
                 games.forEach { gamesByBggid[it.bggid] = it }
             }
-            toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game") }
+            toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6) }
             return bggids.associate { it.to(gamesByBggid[it]!!) }
         }
+    }
+
+    fun gamesWhere(where: SqlExpressionBuilder.()->Op<Boolean>): Iterable<Game> {
+        val bggIds = transaction {
+            Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }
+        }
+        return games(bggIds).values
     }
 }

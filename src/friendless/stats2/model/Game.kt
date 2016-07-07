@@ -8,16 +8,21 @@ import org.jetbrains.exposed.sql.ResultRow
 /**
  * Created by john on 30/06/16.
  */
-class Game(val bggid: Int, val name: String, val geekGames: MutableMap<String, GeekGame> = mutableMapOf<String, GeekGame>()): ModelObject {
+class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers: Int,
+           val geekGames: MutableMap<String, GeekGame> = mutableMapOf<String, GeekGame>()): ModelObject {
     constructor(row: ResultRow): this(
             row[Games.bggid],
-            row[Games.name]) {
+            row[Games.name],
+            row[Games.minPlayers],
+            row[Games.maxPlayers]) {
     }
 
     override fun <T> get(key: Column<T>): Any {
         return when (key) {
             Games.bggid -> bggid
             Games.name -> name
+            Games.minPlayers -> minPlayers
+            Games.maxPlayers -> maxPlayers
             else -> 0
         }
     }
