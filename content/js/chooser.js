@@ -22,7 +22,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     $scope.loadBaseGames = function() {
         var httpRequest = $http({
             method: 'GET',
-            url: '/json/games?q=owned,' + $scope.geek
+            url: '/json/games?q=owned,' + $scope.geek + ",expansions,minus"
         }).success(function(data, status) {
             vm.baseGames = data["games"];
         });

@@ -52,7 +52,7 @@ class MinusSelector(substrate: Substrate, val right: Selector, val left: Selecto
 
 val SELECTOR_DESCRIPTORS: List<SelectorDescriptor> = listOf(
         // games selectors
-        // TODO
+        EXPANSION_DESCRIPTOR,
         // geekgames selectors
         ALL_SELECTOR_DESCRIPTOR, OWNED_SELECTOR_DESCRIPTOR, RATED_SELECTOR_DESCRIPTOR,
         // operators

@@ -1,10 +1,8 @@
 package friendless.stats2.substrate
 
 import friendless.stats2.Config
+import friendless.stats2.database.*
 import friendless.stats2.database.Database
-import friendless.stats2.database.Games
-import friendless.stats2.database.GeekGames
-import friendless.stats2.database.Geeks
 import friendless.stats2.model.Game
 import friendless.stats2.model.Geek
 import friendless.stats2.model.GeekGame
@@ -20,6 +18,11 @@ class Substrate(config: Config): Database(config) {
     val geeks: Iterable<Geek> by lazy {
         transaction {
             Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }.toList()
+        }
+    }
+    val expansions: Iterable<Int> by lazy {
+        transaction {
+            Expansions.slice(Expansions.expansion).selectAll().distinct().map { row -> row[Expansions.expansion] }.toList()
         }
     }
 

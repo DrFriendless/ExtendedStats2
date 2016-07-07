@@ -29,3 +29,8 @@ object Games: Table("games") {
 object Geeks: Table("geeks") {
     val username = varchar("username", 128)
 }
+
+object Expansions: Table("expansions") {
+    val basegame = integer("basegame")
+    val expansion = integer("expansion")
+}
