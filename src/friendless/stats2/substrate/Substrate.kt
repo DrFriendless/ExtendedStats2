@@ -12,28 +12,37 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
- * Created by john on 30/06/16.
+ * Caching layer above the database.
  */
 class Substrate(config: Config): Database(config) {
-    private val geekGamesByGeek: MutableMap<String, Iterable<GeekGame>> = hashMapOf();
-    private val gamesByBggid: MutableMap<Int, Game> = hashMapOf();
+    private val geekGamesByGeek: MutableMap<String, Iterable<Game>> = hashMapOf()
+    private val gamesByBggid: MutableMap<Int, Game> = hashMapOf()
     val geeks: Iterable<Geek> by lazy {
         transaction {
-            Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }
+            Geeks.slice(Geeks.username).selectAll().map { row-> Geek(row) }.toList()
         }
     }
 
-    fun collection(geek: String): Iterable<GeekGame> {
+    fun collection(geek: String): Iterable<Game> {
         synchronized(geekGamesByGeek) {
-            if (!geekGamesByGeek.containsKey(geek)) {
-                geekGamesByGeek[geek] = transaction {
+            var games = geekGamesByGeek[geek]
+            if (games == null) {
+                val collection = transaction {
                     GeekGames.
                             slice(GeekGames.columns).
-                            select { GeekGames.geek eq geek }
-                            .map { row -> GeekGame(row) }
+                            select { GeekGames.geek eq geek }.
+                            map { row -> GeekGame(row) }.
+                            toList()
+                }
+                val ggByGameId = collection.associate { it.game to it }
+                games = games(ggByGameId.keys).values
+                geekGamesByGeek[geek] = games
+                games.forEach {
+                    val gg = ggByGameId[it.bggid]
+                    if (gg != null) it.addGeekGame(gg)
                 }
             }
-            return geekGamesByGeek[geek]!!
+            return games
         }
     }
 

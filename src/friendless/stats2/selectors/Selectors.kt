@@ -1,6 +1,6 @@
 package friendless.stats2.selectors
 
-import friendless.stats2.model.ModelObject
+import friendless.stats2.model.Game
 import friendless.stats2.substrate.Substrate
 import java.util.*
 import java.util.logging.Logger
@@ -14,8 +14,8 @@ import kotlin.reflect.primaryConstructor
  * or higher". For the first we return information only about the game, for the second we return information about
  * the user's interactions with the games. So far I'm not seeing the value in the distinction so this may change.
  */
-abstract class Selector<out T>(val substrate: Substrate) {
-    abstract fun select(geek: String?): Iterable<T>
+abstract class Selector(val substrate: Substrate) {
+    abstract fun select(): Iterable<Game>
 }
 
 enum class SelectorType { GAME, GEEKGAME, OPERATOR }
@@ -24,57 +24,49 @@ data class SelectorDescriptor(val key: String, val arity: Int, val pop: Int, val
 }
 
 val AND_SELECTOR_DESCRIPTOR = SelectorDescriptor("and", 0, 2, AndSelector::class, SelectorType.OPERATOR)
-class AndSelector<out T>(substrate: Substrate, val right: Selector<T>, val left: Selector<T>): Selector<T>(substrate) {
-    override fun select(geek: String?): Iterable<T> {
-        val l = left.select(geek)
-        val r = right.select(geek)
+class AndSelector(substrate: Substrate, val right: Selector, val left: Selector): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        val l = left.select()
+        val r = right.select()
         return l.intersect(r)
     }
 }
 
 val OR_SELECTOR_DESCRIPTOR = SelectorDescriptor("or", 0, 2, OrSelector::class, SelectorType.OPERATOR)
-class OrSelector<out T>(substrate: Substrate, val right: Selector<T>, val left: Selector<T>): Selector<T>(substrate) {
-    override fun select(geek: String?): Iterable<T> {
-        val l = left.select(geek)
-        val r = right.select(geek)
+class OrSelector(substrate: Substrate, val right: Selector, val left: Selector): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        val l = left.select()
+        val r = right.select()
         return l.union(r)
     }
 }
 
 val MINUS_SELECTOR_DESCRIPTOR = SelectorDescriptor("minus", 0, 2, MinusSelector::class, SelectorType.OPERATOR)
-class MinusSelector<out T>(substrate: Substrate, val right: Selector<T>, val left: Selector<T>): Selector<T>(substrate) {
-    override fun select(geek: String?): Iterable<T> {
-        val l = left.select(geek)
-        val r = right.select(geek)
+class MinusSelector(substrate: Substrate, val right: Selector, val left: Selector): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        val l = left.select()
+        val r = right.select()
         return l.minus(r)
     }
 }
 
-val USER_SELECTOR_DESCRIPTOR = SelectorDescriptor("user", 1, 1, UserSelector::class, SelectorType.OPERATOR)
-class UserSelector<out T>(substrate: Substrate, val newGeek: String, val selector: Selector<T>):
-        Selector<T>(substrate) {
-    override fun select(geek: String?): Iterable<T> = selector.select(newGeek)
-}
-
 val SELECTOR_DESCRIPTORS: List<SelectorDescriptor> = listOf(
         // games selectors
-        GAMES_SELECTOR_DESCRIPTOR,
+        // TODO
         // geekgames selectors
         ALL_SELECTOR_DESCRIPTOR, OWNED_SELECTOR_DESCRIPTOR, RATED_SELECTOR_DESCRIPTOR,
         // operators
-        AND_SELECTOR_DESCRIPTOR, OR_SELECTOR_DESCRIPTOR, MINUS_SELECTOR_DESCRIPTOR,
-        // metaselectors
-        USER_SELECTOR_DESCRIPTOR
+        AND_SELECTOR_DESCRIPTOR, OR_SELECTOR_DESCRIPTOR, MINUS_SELECTOR_DESCRIPTOR
 )
 
 fun findDescriptor(key: String): SelectorDescriptor? {
     return SELECTOR_DESCRIPTORS.firstOrNull() { it.key == key }
 }
 
-fun parseSelector(substrate: Substrate, url: String): Selector<ModelObject> {
+fun parseSelector(substrate: Substrate, url: String): Selector {
     val LOG = Logger.getLogger("Selectors")
     var fields: MutableList<String> = ArrayList(url.split(","))
-    val stack = Stack<Selector<ModelObject>>()
+    val stack = Stack<Selector>()
     try {
         while (fields.size > 0) {
             val key = fields.removeAt(0)
@@ -92,7 +84,7 @@ fun parseSelector(substrate: Substrate, url: String): Selector<ModelObject> {
             if (sd.arity > 0) fields = fields.subList(sd.arity, fields.size)
             val constructor = sd.clazz.primaryConstructor
             try {
-                val newSelector = constructor?.call(*args.toArray()) as Selector<ModelObject>
+                val newSelector = constructor?.call(*args.toArray()) as Selector
                 stack.push(newSelector)
             } catch (e: IllegalArgumentException) {
                 LOG.severe { "Failed to invoke $constructor with $argClasses" }

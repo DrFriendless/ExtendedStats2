@@ -1,7 +1,9 @@
 package friendless.stats2.httpd
 
+import com.github.salomonbrys.kotson.jsonObject
 import friendless.stats2.Config
 import friendless.stats2.httpd.handlers.JsonHandler
+import friendless.stats2.model.toJson
 import friendless.stats2.selectors.parseSelector
 import friendless.stats2.substrate.Substrate
 import org.slf4j.LoggerFactory
@@ -25,7 +27,7 @@ fun AppServer.getLogError(path: kotlin.String, vararg handlers: org.wasabi.routi
 }
 
 /**
- * Created by john on 29/06/16.
+ * Web server main process.
  */
 fun main(args: Array<String>) {
     val httpdConfig = AppConfiguration()
@@ -44,7 +46,7 @@ fun main(args: Array<String>) {
 
             val q = request.queryParams["q"] ?: "all"
             val selector = parseSelector(substrate, q)
-            response.send(JsonHandler(substrate).geekGames(selector, userId).toString(), "application/json")
+            response.send(JsonHandler(substrate).geekGames(selector).toString(), "application/json")
         }
     })
     server.getLogError("/json/geeks", {
@@ -55,7 +57,10 @@ fun main(args: Array<String>) {
         val q = request.queryParams["q"] ?: "all"
         val substrate = Substrate(config)
         val selector = parseSelector(substrate, q)
-        response.send(JsonHandler(substrate).games(selector, null).toString(), "application/json")
+        val games = selector.select().toList()
+        val truncated = if (games.size > 100) games.subList(0, 100) else games
+        val result = jsonObject("count" to games.size, "games" to toJson(truncated))
+        response.send(result.toString(), "application/json")
     })
     // static javascript files
     server.getLogError("/js/:file", {

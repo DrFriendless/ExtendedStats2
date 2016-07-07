@@ -44,6 +44,9 @@
                 <div id="games">
                     <H2>Games</H2>
                     <table>
+                        <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
+                            <TD>{{game.name}}</TD>
+                        </tr>
                     </table>
                 </div>
             </td>
@@ -60,8 +63,8 @@
                     <!-- Choose the base set of games -->
                     <select
                             id="baseSelect"
-                            ng-init="ctrl.baseGames = ctrl.baseOptions[0]"
-                            ng-model="ctrl.baseGames"
+                            ng-init="ctrl.baseOption = ctrl.baseOptions[0]"
+                            ng-model="ctrl.baseOption"
                             ng-options="option.name for option in ctrl.baseOptions"
                             title="Set of games to choose from">
                     </select>

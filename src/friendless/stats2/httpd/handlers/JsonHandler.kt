@@ -17,12 +17,12 @@ import friendless.stats2.substrate.Substrate
  * Handler for requests which return JSON.
  */
 class JsonHandler(val substrate: Substrate) {
-    fun geekGames(selector: Selector<ModelObject>, geek: String): JsonElement {
-        return postProcess(toJson(selector.select(geek), GeekGames.geek))
+    fun geekGames(selector: Selector): JsonElement {
+        return postProcess(toJson(selector.select(), GeekGames.geek))
     }
 
-    fun games(selector: Selector<ModelObject>, geek: String?): JsonElement {
-        return toJson(selector.select(geek))
+    fun games(selector: Selector): JsonElement {
+        return toJson(selector.select())
     }
 
     private fun postProcess(geekgames: JsonArray): JsonArray {

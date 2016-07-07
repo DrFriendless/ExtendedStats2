@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.ResultRow
 /**
  * Created by john on 30/06/16.
  */
-class Game(val bggid: Int, val name: String): ModelObject {
+class Game(val bggid: Int, val name: String, val geekGames: MutableMap<String, GeekGame> = mutableMapOf<String, GeekGame>()): ModelObject {
     constructor(row: ResultRow): this(
             row[Games.bggid],
             row[Games.name]) {
@@ -20,6 +20,14 @@ class Game(val bggid: Int, val name: String): ModelObject {
             Games.name -> name
             else -> 0
         }
+    }
+
+    fun addGeekGame(gg: GeekGame) {
+        geekGames[gg.geek] = gg
+    }
+
+    fun forGeek(geek: String): GeekGame? {
+        return geekGames[geek]
     }
 
     override fun toJson(vararg omit: Column<*>): JsonObject {
