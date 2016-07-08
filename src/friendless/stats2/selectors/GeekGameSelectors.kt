@@ -1,7 +1,7 @@
 package friendless.stats2.selectors
 
 import friendless.stats2.model.Game
-import friendless.stats2.substrate.Substrate
+import friendless.stats2.database.Substrate
 
 /**
  * Created by john on 30/06/16.

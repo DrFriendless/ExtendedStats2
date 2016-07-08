@@ -1,8 +1,6 @@
-package friendless.stats2.substrate
+package friendless.stats2.database
 
 import friendless.stats2.Config
-import friendless.stats2.database.*
-import friendless.stats2.database.Database
 import friendless.stats2.model.Game
 import friendless.stats2.model.Geek
 import friendless.stats2.model.GeekGame
@@ -13,20 +11,21 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Caching layer above the database.
  */
 class Substrate(config: Config): Database(config) {
+    private val name = ThreadLocal<String>()
+    init {
+        name.set("substrate" + System.currentTimeMillis())
+    }
+
     private val geekGamesByGeek: MutableMap<String, Iterable<Game>> = hashMapOf()
     private val gamesByBggid: MutableMap<Int, Game> = hashMapOf()
-    val geeks: Iterable<Geek> by lazy {
-        synchronized(this) {
-            transaction {
-                Geeks.slice(Geeks.username).selectAll().map { row -> Geek(row) }.toList()
-            }
+    val geeks: Iterable<Geek> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        transaction {
+            Geeks.slice(Geeks.username).selectAll().map { row -> Geek(row) }.toList()
         }
     }
-    val expansions: Set<Int> by lazy {
-        synchronized(this) {
-            transaction {
-                Expansions.slice(Expansions.expansion).selectAll().distinct().map { row -> row[Expansions.expansion] }.toSet()
-            }
+    val expansions: Set<Int> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        transaction {
+            Expansions.slice(Expansions.expansion).selectAll().distinct().map { row -> row[Expansions.expansion] }.toSet()
         }
     }
 
@@ -34,11 +33,11 @@ class Substrate(config: Config): Database(config) {
         synchronized(geekGamesByGeek) {
             var games = geekGamesByGeek[geek]
             if (games == null) {
-                val collection = GeekGames.
+                val ggByGameId = GeekGames.
                         slice(GeekGames.columns).
                         select { GeekGames.geek eq geek }.
-                        map { row -> GeekGame(row) }
-                val ggByGameId = collection.associate { it.game to it }
+                        map { row -> GeekGame(row) }.
+                        associate { it.game to it }
                 games = games(ggByGameId.keys).values
                 geekGamesByGeek[geek] = games
                 games.forEach {
@@ -65,7 +64,7 @@ class Substrate(config: Config): Database(config) {
         }
     }
 
-    fun gamesWhere(where: SqlExpressionBuilder.()->Op<Boolean>): Iterable<Game> {
+    fun gamesWhere(where: SqlExpressionBuilder.()-> Op<Boolean>): Iterable<Game> {
         val bggIds =
                 Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }.toSet()
         return games(bggIds).values
