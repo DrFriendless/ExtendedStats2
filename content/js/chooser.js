@@ -34,7 +34,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             components[index++]= players[i];
             if (i > 0) components[index++] = "or";
         }
-        return '/json/games?q=' + components.join() + ",players," + players.length + ',and,expansions,minus'
+        return '/json/games?q=' + components.join() + ",players," + vm.numPlayers + ',and,expansions,minus'
     };
 
     vm.loadBaseGames = function() {
@@ -80,9 +80,12 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         { "name": "Highest Total Rating", "key": "totalRating"},
         { "name": "Highest Minimum Rating", "key": "minimumRating"},
         { "name": "Total Plays", "key": "totalPlays"},
-        { "name": "Most Want to Plays", "key": "wantToPlay"}
+        { "name": "Most Want to Plays", "key": "wantToPlay"},
+        { "name": "Most Want to Plays or Buys or Trade", "key": "wantToPlayBuyTrade"}
     ];
     vm.evaluationFunction = {};
+    vm.numPlayers = 1;
+
     vm.loadGeeks();
     vm.loadBaseGames();
     vm.loadBestGames();
@@ -92,6 +95,8 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         function() { return vm.players; },
 
         function(newValue, oldValue) {
+            if (typeof newValue == "undefined") return;
+            vm.numPlayers = newValue.length;
             vm.loadBaseGames();
             vm.loadBestGames();
         }
@@ -100,6 +105,14 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         function() { return vm.evaluationFunction; },
 
         function(newValue, oldValue) {
+            vm.loadBestGames();
+        }
+    );
+    $scope.$watch(
+        function() { return vm.numPlayers; },
+
+        function(newValue, oldValue) {
+            vm.loadBaseGames();
             vm.loadBestGames();
         }
     );

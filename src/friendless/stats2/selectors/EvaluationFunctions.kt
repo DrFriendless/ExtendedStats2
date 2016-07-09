@@ -47,8 +47,16 @@ class WantToPlayEvaluationFunction(): EvaluationFunction() {
     }
 }
 
+val WANT_TO_PLAYBUYTRADE_DESCRIPTOR = EvaluationFunctionDescriptor("wantToPlayBuyTrade", WantToPlayBuyTradeEvaluationFunction::class)
+class WantToPlayBuyTradeEvaluationFunction(): EvaluationFunction() {
+    override fun evaluate(g: Game): Int {
+        return g.geekGames.values.map { if (it.wanttoplay or it.wanttobuy or it.want) 1 else 0 }.sum()
+    }
+}
+
 val EVALUATION_FUNCTION_DESCRIPTORS: List<EvaluationFunctionDescriptor<*>> = listOf(
-        TOTAL_RATINGS_DESCRIPTOR, MINIMUM_RATINGS_DESCRIPTOR, ALL_SAME_DESCRIPTOR, WANT_TO_PLAY_DESCRIPTOR
+        TOTAL_RATINGS_DESCRIPTOR, MINIMUM_RATINGS_DESCRIPTOR, ALL_SAME_DESCRIPTOR, WANT_TO_PLAY_DESCRIPTOR,
+        WANT_TO_PLAYBUYTRADE_DESCRIPTOR
 )
 
 fun getScoreMethod(key: String): EvaluationFunction {

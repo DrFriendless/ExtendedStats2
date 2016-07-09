@@ -6,12 +6,10 @@ import friendless.stats2.httpd.handlers.JsonHandler
 import friendless.stats2.model.toJson
 import friendless.stats2.selectors.parseSelector
 import friendless.stats2.database.Substrate
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.wasabi.app.AppConfiguration
 import org.wasabi.app.AppServer
-import java.sql.Connection
 
 fun AppServer.getLogError(path: kotlin.String, vararg handlers: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): kotlin.Unit {
     val logger = LoggerFactory.getLogger("handler")

@@ -82,7 +82,11 @@
                             {{geek.username}}
                         </ui-select-choices>
                     </ui-select>
-                    <!-- TODO: number of players -->
+
+                    <H3>Players</H3>
+                    <label>Number:
+                        <input type="number" name="input" ng-model="ctrl.numPlayers" min="1" max="12" required>
+                    </label>
 
                     <H3>Criteria</H3>
                     <!-- Choose the evaluation function -->
