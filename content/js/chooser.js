@@ -60,7 +60,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             more[index++]= vm.players[i].username;
         }
         more[index++] = "score";
-        more[index++] = "totalRating";
+        more[index++] = vm.evaluationFunction.key;
         url = url + "," + more.join();
         var httpRequest = $http({
             method: 'GET',
@@ -77,10 +77,10 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     ];
     vm.baseOption = {};
     vm.evaluationOptions = [
-        { "name": "Highest Total Rating"},
-        { "name": "Highest Minimum Rating"},
-        { "name": "Total Plays"},
-        { "name": "Most Want to Plays"}
+        { "name": "Highest Total Rating", "key": "totalRating"},
+        { "name": "Highest Minimum Rating", "key": "minimumRating"},
+        { "name": "Total Plays", "key": "totalPlays"},
+        { "name": "Most Want to Plays", "key": "wantToPlay"}
     ];
     vm.evaluationFunction = {};
     vm.loadGeeks();
@@ -93,6 +93,13 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
 
         function(newValue, oldValue) {
             vm.loadBaseGames();
+            vm.loadBestGames();
+        }
+    );
+    $scope.$watch(
+        function() { return vm.evaluationFunction; },
+
+        function(newValue, oldValue) {
             vm.loadBestGames();
         }
     );

@@ -41,8 +41,7 @@ class Substrate(config: Config): Database(config) {
                 games = games(ggByGameId.keys).values
                 geekGamesByGeek[geek] = games
                 games.forEach {
-                    val gg = ggByGameId[it.bggid]
-                    if (gg != null) it.addGeekGame(gg)
+                    g -> ggByGameId[g.bggid] ?.let { gg -> g.addGeekGame(gg) }
                 }
             }
             return games

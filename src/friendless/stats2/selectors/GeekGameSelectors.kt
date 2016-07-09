@@ -36,15 +36,12 @@ class AnnotateSelector(substrate: Substrate, val geek: String, val selector: Sel
 val SCORE_SELECTOR_DESCRIPTOR = SelectorDescriptor("score", 1, 1, ScoreSelector::class, SelectorType.GEEKGAME)
 class ScoreSelector(substrate: Substrate, val scoreMethod: String, val selector: Selector): Selector(substrate) {
     override fun select(): Iterable<Game> {
+        val evalFunction = getScoreMethod(scoreMethod)
         val games = selector.select()
         games.forEach {
-            it.score = score(scoreMethod, it)
+            it.score = evalFunction.evaluate(it)
         }
         return games.sortedBy { -it.score }
     }
 }
 
-// TODO - implement scoreMethods
-fun score(scoreMethod: String, game: Game): Int {
-    return game.geekGames.values.map { (Math.max(it.rating, 0.0) * 10).toInt() }.fold(0) { a, b -> a + b }
-}
