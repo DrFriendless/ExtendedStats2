@@ -28,8 +28,30 @@ class RatedSelector(substrate: Substrate, geek: String): AllSelector(substrate, 
 val ANNOTATE_SELECTOR_DESCRIPTOR = SelectorDescriptor("annotate", 1, 1, AnnotateSelector::class, SelectorType.GEEKGAME)
 class AnnotateSelector(substrate: Substrate, val geek: String, val selector: Selector): Selector(substrate) {
     override fun select(): Iterable<Game> {
+        // force the geekgames to be loaded and to annotate the games in the cache
         substrate.collection(geek)
         return selector.select()
+    }
+}
+
+val WANTTOBUY_SELECTOR_DESCRIPTOR = SelectorDescriptor("wanttobuy", 1, 0, WantToBuySelector::class, SelectorType.GEEKGAME)
+class WantToBuySelector(substrate: Substrate, val geek: String): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        return substrate.collection(geek).filter { it.forGeek(geek)?.wanttobuy ?: false }
+    }
+}
+
+val WANTINTRADE_SELECTOR_DESCRIPTOR = SelectorDescriptor("wantintrade", 1, 0, WantInTradeSelector::class, SelectorType.GEEKGAME)
+class WantInTradeSelector(substrate: Substrate, val geek: String): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        return substrate.collection(geek).filter { it.forGeek(geek)?.want ?: false }
+    }
+}
+
+val WANTTOPLAY_SELECTOR_DESCRIPTOR = SelectorDescriptor("wanttoplay", 1, 0, WantToPlaySelector::class, SelectorType.GEEKGAME)
+class WantToPlaySelector(substrate: Substrate, val geek: String): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        return substrate.collection(geek).filter { it.forGeek(geek)?.wanttoplay ?: false }
     }
 }
 

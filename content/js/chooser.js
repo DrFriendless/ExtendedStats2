@@ -30,7 +30,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         var index = 0;
         var i;
         for (i=0; i<players.length; i++) {
-            components[index++] = "owned";
+            components[index++] = vm.baseOption.key;
             components[index++]= players[i];
             if (i > 0) components[index++] = "or";
         }
@@ -72,8 +72,9 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     }
 
     vm.baseOptions = [
-        { "name": "Owned by any player"},
-        { "name": "Any game at all"}
+        { "name": "Owned by any player", "key": "owned"},
+        { "name": "Someone wants to buy", "key": "wanttobuy"},
+        { "name": "Someone wants to play", "key": "wanttoplay"}
     ];
     vm.baseOption = {};
     vm.evaluationOptions = [
@@ -110,6 +111,14 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     );
     $scope.$watch(
         function() { return vm.numPlayers; },
+
+        function(newValue, oldValue) {
+            vm.loadBaseGames();
+            vm.loadBestGames();
+        }
+    );
+    $scope.$watch(
+        function() { return vm.baseOption; },
 
         function(newValue, oldValue) {
             vm.loadBaseGames();
