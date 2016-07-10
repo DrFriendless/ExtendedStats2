@@ -42,48 +42,33 @@ class Substrate(config: Config): Database(config) {
     }
 
     fun collection(geek: String): Iterable<Game> {
-        synchronized(geekGamesByGeek) {
-            var games = geekGamesByGeek[geek]
-            if (games == null) {
-                val ggByGameId = GeekGames.
-                        slice(GeekGames.columns).
-                        select { GeekGames.geek eq geek }.
-                        map { row -> GeekGame(row) }.
-                        associate { it.game to it }
-                games = games(ggByGameId.keys).values
-                geekGamesByGeek[geek] = games
-                games.forEach {
-                    g -> ggByGameId[g.bggid] ?.let { gg -> g.addGeekGame(gg) }
-                }
+        return geekGamesByGeek.findOrAdd(geek) {
+            val ggByGameId = GeekGames.
+                    slice(GeekGames.columns).
+                    select { GeekGames.geek eq geek }.
+                    map { row -> GeekGame(row) }.
+                    associate { it.game to it }
+            val games = games(ggByGameId.keys).values
+            games.forEach {
+                g -> ggByGameId[g.bggid] ?.let { gg -> g.addGeekGame(gg) }
             }
-            return games
+            games
         }
     }
 
-    // TODO - encode this pattern
     fun baseGamesForExpansion(expansion: Int): Set<Int> {
-        synchronized(baseGamesByExpansion) {
-            var bgs = baseGamesByExpansion[expansion]
-            if (bgs == null) {
-                bgs = expansionData.filter { it.second == expansion }.map { it.first }.toSet()
-                baseGamesByExpansion[expansion] = bgs
-            }
-            return bgs
+        return baseGamesByExpansion.findOrAdd(expansion) {
+            expansionData.filter { it.second == expansion }.map { it.first }.toSet()
         }
     }
 
     fun plays(geek: String): Iterable<Play> {
-        synchronized(playsByGeek) {
-            var plays = playsByGeek[geek]
-            if (plays == null) {
-                val ps = Plays.
-                        slice(Plays.columns).
-                        select { Plays.geek eq geek }.
-                        map { row -> Play(row) }.
-                        toList()
-                plays = reconstructPlays(ps)
-            }
-            return plays
+        return playsByGeek.findOrAdd(geek) {
+            reconstructPlays(Plays.
+                    slice(Plays.columns).
+                    select { Plays.geek eq geek }.
+                    map { row -> Play(row) }.
+                    toList())
         }
     }
 
@@ -106,8 +91,8 @@ class Substrate(config: Config): Database(config) {
                 // some of these possible base games could be expansions themselves.
                 val possibleBaseGames = baseGamesForExpansion(expPlay.game)
                 val candidateBaseGamePlays = plays.filter { it != expPlay &&
-                            (it.game in possibleBaseGames || !possibleBaseGames.intersect(it.expansions).isEmpty()) &&
-                            expPlay.game !in it.expansions
+                        (it.game in possibleBaseGames || !possibleBaseGames.intersect(it.expansions).isEmpty()) &&
+                        expPlay.game !in it.expansions
                 }
                 candidateBaseGamePlays.firstOrNull()?.let { bgPlay ->
                     val newQuantity = Math.min(expPlay.quantity, bgPlay.quantity)
@@ -174,3 +159,20 @@ class Substrate(config: Config): Database(config) {
         return games(bggIds).values
     }
 }
+
+/**
+ * Find an entry in the map, or calculate its value and keep it for later.
+ */
+fun <K, V> MutableMap<K, V>.findOrAdd(key: K, calc: (K) -> V): V {
+    synchronized(this) {
+        val result = this[key]
+        if (result == null) {
+            val v = calc(key)
+            this[key] = v
+            return v
+        }
+        return result
+    }
+}
+
+
