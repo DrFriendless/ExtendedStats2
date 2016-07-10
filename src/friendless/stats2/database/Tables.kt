@@ -36,3 +36,14 @@ object Expansions: Table("expansions") {
     val basegame = integer("basegame")
     val expansion = integer("expansion")
 }
+
+object Plays: Table("plays") {
+    val game = integer("game")
+    val geek = varchar("geek", 128)
+    val playDate = date("playDate")
+    val quantity = integer("quantity")
+    val basegame = integer("basegame")
+    val raters = integer("raters")
+    val ratingsTotal = integer("ratingsTotal")
+    val location = varchar("location", 256)
+}

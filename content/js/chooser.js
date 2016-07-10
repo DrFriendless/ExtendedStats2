@@ -58,6 +58,8 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         for (i=0; i<vm.players.length; i++) {
             more[index++] = "annotate";
             more[index++]= vm.players[i].username;
+            more[index++] = "playsAnnotate";
+            more[index++]= vm.players[i].username;
         }
         more[index++] = "score";
         more[index++] = vm.evaluationFunction.key;
@@ -91,7 +93,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     vm.loadBaseGames();
     vm.loadBestGames();
     // when the player list changes, reload the games collection
-    // TODO: this should really depend on the baseOption
     $scope.$watch(
         function() { return vm.players; },
 

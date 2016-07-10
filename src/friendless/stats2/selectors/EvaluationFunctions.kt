@@ -54,9 +54,16 @@ class WantToPlayBuyTradeEvaluationFunction(): EvaluationFunction() {
     }
 }
 
+val MOST_PLAYS_DESCRIPTOR = EvaluationFunctionDescriptor("totalPlays", MostPlaysEvaluationFunction::class)
+class MostPlaysEvaluationFunction(): EvaluationFunction() {
+    override fun evaluate(g: Game): Int {
+        return g.plays.values.sum()
+    }
+}
+
 val EVALUATION_FUNCTION_DESCRIPTORS: List<EvaluationFunctionDescriptor<*>> = listOf(
         TOTAL_RATINGS_DESCRIPTOR, MINIMUM_RATINGS_DESCRIPTOR, ALL_SAME_DESCRIPTOR, WANT_TO_PLAY_DESCRIPTOR,
-        WANT_TO_PLAYBUYTRADE_DESCRIPTOR
+        WANT_TO_PLAYBUYTRADE_DESCRIPTOR, MOST_PLAYS_DESCRIPTOR
 )
 
 fun getScoreMethod(key: String): EvaluationFunction {

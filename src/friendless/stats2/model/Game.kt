@@ -9,7 +9,8 @@ import org.jetbrains.exposed.sql.ResultRow
  * Created by john on 30/06/16.
  */
 class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers: Int,
-           val geekGames: MutableMap<String, GeekGame> = mutableMapOf<String, GeekGame>()): ModelObject {
+           val geekGames: MutableMap<String, GeekGame> = mutableMapOf(),
+           val plays: MutableMap<String, Int> = mutableMapOf()): ModelObject {
     var score = 0
 
     constructor(row: ResultRow): this(
@@ -37,7 +38,15 @@ class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers
         return geekGames[geek]
     }
 
+    fun playsForGeek(geek: String): Int {
+        return plays[geek] ?: 0
+    }
+
     override fun toJson(vararg omit: Column<*>): JsonObject {
         return toJson(this, Games.columns, *omit)
+    }
+
+    fun setPlays(geek: String, count: Int) {
+        plays[geek] = count
     }
 }

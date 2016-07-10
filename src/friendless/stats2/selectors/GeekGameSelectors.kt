@@ -34,6 +34,22 @@ class AnnotateSelector(substrate: Substrate, val geek: String, val selector: Sel
     }
 }
 
+val PLAYS_ANNOTATE_SELECTOR_DESCRIPTOR = SelectorDescriptor("playsAnnotate", 1, 1, PlaysAnnotateSelector::class, SelectorType.GEEKGAME)
+class PlaysAnnotateSelector(substrate: Substrate, val geek: String, val selector: Selector): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        val plays = substrate.plays(geek)
+        val counts = mutableMapOf<Int, Int>()
+        plays.forEach { play ->
+            val gs = setOf(play.game) + play.expansions
+            gs.forEach { g -> counts[g] = (counts[g] ?: 0) + play.quantity }
+        }
+        counts.entries.forEach { entry ->
+            substrate.game(entry.key)?.setPlays(geek, entry.value)
+        }
+        return selector.select()
+    }
+}
+
 val WANTTOBUY_SELECTOR_DESCRIPTOR = SelectorDescriptor("wanttobuy", 1, 0, WantToBuySelector::class, SelectorType.GEEKGAME)
 class WantToBuySelector(substrate: Substrate, val geek: String): Selector(substrate) {
     override fun select(): Iterable<Game> {
