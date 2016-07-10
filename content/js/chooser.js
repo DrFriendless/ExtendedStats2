@@ -76,7 +76,8 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     vm.baseOptions = [
         { "name": "Owned by any player", "key": "owned"},
         { "name": "Someone wants to buy", "key": "wanttobuy"},
-        { "name": "Someone wants to play", "key": "wanttoplay"}
+        { "name": "Someone wants to play", "key": "wanttoplay"},
+        { "name": "Everyone wants to play", "key": "allwanttoplay"}
     ];
     vm.baseOption = {};
     vm.evaluationOptions = [
