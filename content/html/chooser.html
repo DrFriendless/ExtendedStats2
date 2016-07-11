@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/sandstone/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/stats2.css">
+    <link rel="stylesheet" type="text/css" href="/css/chooser.css">
     <link rel="stylesheet" type="text/css" href="http://angular-ui.github.io/ui-select/dist/select.css">
     <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
@@ -14,56 +15,44 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.js"></script>
     <script src="http://angular-ui.github.io/ui-select/dist/select.js"></script>
     <script src="/js/chooser.js"></script>
-    <style>
-        /* bootstrap capitalises selected geeks, turn that off */
-        .btn {
-            text-transform: none;
-        }
-        #config {
-            float: right;
-        }
-        #games {
-            width: 500px;
-        }
-        #result {
-            width: 500px;
-        }
-        #columns {
-            background-color: transparent;
-        }
-        #playersSelect {
-            width: 300px;
-        }
-    </style>
 </head>
 <body>
-<div ng-controller="ChooserCtrl as ctrl">
-    <table>
-        <tr id="columns">
+<div id="chooser" ng-controller="ChooserCtrl as ctrl">
+    <H1>What Should We Play?</H1>
+    <table class="columns">
+        <tr>
             <td>
-                <div id="games">
-                    <H2>Games</H2>
-                    Showing {{ctrl.baseGames.length}} of {{ctrl.baseGameCount}}...
+                <div class="gamelist">
+                    <div class="header">
+                        <H2>Available Games</H2>
+                        Showing {{ctrl.baseGames.length}} of {{ctrl.baseGameCount}}...
+                    </div>
                     <table>
+                        <tbody>
                         <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A></TD>
                         </tr>
+                        </tbody>
                     </table>
                 </div>
             </td>
             <td>
-                <div id="result">
-                    <H2>Result</H2>
-                    Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
+                <div class="gamelist">
+                    <div class="header">
+                        <H2>What You Should Play</H2>
+                        Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
+                    </div>
                     <table>
+                        <tbody>
                         <tr ng-repeat="game in ctrl.bestGames">
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A></TD>
                         </tr>
+                        </tbody>
                     </table>
                 </div>
             </td>
-            <td>
-                <div id="config">
+            <td class="config">
+                <div>
                     <H3>Collection</H3>
                     <!-- Choose the base set of games -->
                     <select
