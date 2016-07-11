@@ -1,7 +1,10 @@
 package friendless.stats2.model
 
+import com.github.salomonbrys.kotson.jsonArray
+import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import friendless.stats2.database.Games
+import friendless.stats2.database.GeekGames
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 
@@ -34,16 +37,17 @@ class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers
         geekGames[gg.geek] = gg
     }
 
-    fun forGeek(geek: String): GeekGame? {
-        return geekGames[geek]
-    }
+    fun forGeek(geek: String): GeekGame? = geekGames[geek]
 
-    fun playsForGeek(geek: String): Int {
-        return plays[geek] ?: 0
-    }
+    fun playsForGeek(geek: String): Int = plays[geek] ?: 0
 
     override fun toJson(vararg omit: Column<*>): JsonObject {
-        return toJson(this, Games.columns, *omit)
+        val result = toJson(this, Games.columns, *omit)
+        val geeks = jsonArray(geekGames.values.map { toJson(it, GeekGames.columns, GeekGames.game) })
+        result.add("geeks", geeks)
+        val plays = jsonObject(plays.entries.map { it.key to it.value })
+        result.add("plays", plays)
+        return result
     }
 
     fun setPlays(geek: String, count: Int) {

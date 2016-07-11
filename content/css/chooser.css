@@ -92,5 +92,17 @@ div.gamelist div.header {
     width: 300px;
 }
 
+p.word {
+    display: inline
+}
+
+div.commentary {
+    float: right;
+}
+
+.commentary {
+    color: #080;
+    font-size:76%;
+}
 
 
