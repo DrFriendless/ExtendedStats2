@@ -34,7 +34,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             components[index++]= players[i];
             if (i > 0) components[index++] = "or";
         }
-        return '/json/games?q=' + components.join() + ",players," + vm.numPlayers + ',and,expansions,minus'
+        return '/json/games?q=' + components.join() + ',expansions,minus'
     };
 
     vm.loadBaseGames = function() {
@@ -54,6 +54,9 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         if (url == null) return;
         var more = [];
         var index = 0;
+        more[index++] = "players";
+        more[index++] = vm.numPlayers;
+        more[index++] = "and";
         var i;
         for (i=0; i<vm.players.length; i++) {
             more[index++] = "annotate";
@@ -77,7 +80,9 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         { "name": "Owned by any player", "key": "owned"},
         { "name": "Someone wants to buy", "key": "wanttobuy"},
         { "name": "Someone wants to play", "key": "wanttoplay"},
-        { "name": "Everyone wants to play", "key": "allwanttoplay"}
+        { "name": "Everyone wants to play", "key": "allwanttoplay"},
+        { "name": "At least two want to...", "key": "twowantto"},
+        { "name": "At least two want to and someone owns it", "key": "ownedtwowantto"},
     ];
     vm.baseOption = {};
     vm.evaluationOptions = [
@@ -127,6 +132,9 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             vm.loadBestGames();
         }
     );
+    $scope.validRating = function(v,i,a) {
+        return v.rating > 0;
+    }
 }
 
 app.controller('ChooserCtrl', ChooserCtrl);

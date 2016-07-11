@@ -31,6 +31,10 @@
                         <tbody>
                         <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
+                                <div class="commentary">
+                                    <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'owned':true}">{{geek.geek}} </p><br>
+                                </div>
+                            </TD>
                             </TD>
                         </tr>
                         </tbody>
@@ -49,7 +53,7 @@
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
                                 <div class="commentary">
                                     <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'owned':true}">{{geek.geek}} </p><br>
-                                    <b>Ratings:</b> <p class="word" ng-repeat="geek in game.geeks">{{geek.geek}} {{geek.rating}} </p><br>
+                                    <b>Ratings:</b> <p class="word" ng-repeat="geek in game.geeks | filter: validRating">{{geek.geek}} {{geek.rating}} </p><br>
                                     <b>Want to play:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'wanttoplay':true}">{{geek.geek}} </p><br>
                                     <b>Want to buy:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'wanttobuy':true}">{{geek.geek}} </p><br>
                                     <b>Want in trade:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'want':true}">{{geek.geek}} </p><br>

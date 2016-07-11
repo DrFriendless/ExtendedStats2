@@ -78,6 +78,25 @@ class AllWantToPlaySelector(substrate: Substrate, val geek: String): Selector(su
     }
 }
 
+val TWOWANTTOPLAY_SELECTOR_DESCRIPTOR = SelectorDescriptor("twowantto", 1, 0, TwoWantToSelector::class, SelectorType.GEEKGAME)
+class TwoWantToSelector(substrate: Substrate, val geek: String): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        return substrate.collection(geek).filter { game ->
+            game.geekGames.values.filter { it.wanttobuy || it.wanttoplay || it.want }.size > 1
+        }
+    }
+}
+
+val OWNEDTWOWANTTOPLAY_SELECTOR_DESCRIPTOR = SelectorDescriptor("ownedtwowantto", 1, 0, OwnedTwoWantToSelector::class, SelectorType.GEEKGAME)
+class OwnedTwoWantToSelector(substrate: Substrate, val geek: String): Selector(substrate) {
+    override fun select(): Iterable<Game> {
+        return substrate.collection(geek).filter { game -> game.geekGames.values.any { it.owned }}.
+                filter { game ->
+                    game.geekGames.values.filter { it.wanttobuy || it.wanttoplay || it.want }.size > 1
+                }
+    }
+}
+
 val SCORE_SELECTOR_DESCRIPTOR = SelectorDescriptor("score", 1, 1, ScoreSelector::class, SelectorType.GEEKGAME)
 class ScoreSelector(substrate: Substrate, val scoreMethod: String, val selector: Selector): Selector(substrate) {
     override fun select(): Iterable<Game> {

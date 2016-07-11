@@ -7,6 +7,7 @@ import friendless.stats2.model.GeekGame
 import friendless.stats2.model.Play
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import java.sql.Date
 import java.util.*
 
@@ -64,9 +65,10 @@ class Substrate(config: Config): Database(config) {
 
     fun plays(geek: String): Iterable<Play> {
         return playsByGeek.findOrAdd(geek) {
+            val never = DateTime(1900,1,1,1,1)
             reconstructPlays(Plays.
                     slice(Plays.columns).
-                    select { Plays.geek eq geek }.
+                    select { (Plays.geek eq geek) and (Plays.playDate greater never) }.
                     map { row -> Play(row) }.
                     toList())
         }

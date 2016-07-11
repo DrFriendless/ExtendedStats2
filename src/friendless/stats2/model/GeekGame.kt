@@ -32,7 +32,7 @@ class GeekGame(val geek: String, val game: Int, val rating: Double,
         return when (key) {
             GeekGames.geek -> geek
             GeekGames.game -> game
-            GeekGames.rating -> rating
+            GeekGames.rating -> Math.round(rating * 10) / 10.0
             GeekGames.owned -> owned
             GeekGames.want -> want
             GeekGames.trade -> trade
