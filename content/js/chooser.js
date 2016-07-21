@@ -16,7 +16,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             url: '/json/geeks'
         }).success(function(data, status) {
             vm.geeks = data["geeks"];
-            vm.players = vm.geeks.filter(function(geek) { return geek.username == vm.geek });
+            vm.players = vm.geeks.filter(function(geek) { return geek.geek == vm.geek });
         });
     };
     vm.getPlayers = function() {

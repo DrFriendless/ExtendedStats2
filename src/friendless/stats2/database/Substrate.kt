@@ -1,10 +1,7 @@
 package friendless.stats2.database
 
 import friendless.stats2.Config
-import friendless.stats2.model.Game
-import friendless.stats2.model.Geek
-import friendless.stats2.model.GeekGame
-import friendless.stats2.model.Play
+import friendless.stats2.model.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -27,6 +24,11 @@ class Substrate(config: Config): Database(config) {
     val geeks: Iterable<Geek> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
             Geeks.slice(Geeks.username).selectAll().map { row -> Geek(row) }.toList()
+        }
+    }
+    val australians: Iterable<User> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        transaction {
+            Users.slice(Users.columns).select { Users.country eq "Australia" }.orderBy(Users.geek, true).map { row -> User(row) }.toList()
         }
     }
     val expansionData: List<Pair<Int, Int>> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
