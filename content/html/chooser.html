@@ -52,11 +52,11 @@
                         <tr ng-repeat="game in ctrl.bestGames">
                             <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
                                 <div class="commentary">
-                                    <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'owned':true}">{{geek.geek}} </p><br>
+                                    <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: owned">{{geek.geek}} </p><br>
                                     <b>Ratings:</b> <p class="word" ng-repeat="geek in game.geeks | filter: validRating">{{geek.geek}} {{geek.rating}} </p><br>
-                                    <b>Want to play:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'wanttoplay':true}">{{geek.geek}} </p><br>
-                                    <b>Want to buy:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'wanttobuy':true}">{{geek.geek}} </p><br>
-                                    <b>Want in trade:</b> <p class="word" ng-repeat="geek in game.geeks | filter: {'want':true}">{{geek.geek}} </p><br>
+                                    <b>Want to play:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttoplay">{{geek.geek}} </p><br>
+                                    <b>Want to buy:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttobuy">{{geek.geek}} </p><br>
+                                    <b>Want in trade:</b> <p class="word" ng-repeat="geek in game.geeks | filter: want">{{geek.geek}} </p><br>
                                     <b>Plays:</b> <p class="word" ng-repeat="(geek, plays) in game.plays">{{geek}} {{plays}} </p>
                                 </div>
                             </TD>

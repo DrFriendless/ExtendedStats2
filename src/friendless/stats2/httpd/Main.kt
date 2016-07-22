@@ -1,6 +1,9 @@
 package friendless.stats2.httpd
 
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.set
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import friendless.stats2.Config
 import friendless.stats2.httpd.handlers.JsonHandler
 import friendless.stats2.model.toJson
@@ -49,8 +52,13 @@ fun main(args: Array<String>) {
             val games = selector.select().toList()
             val truncated = if (games.size > 100) games.subList(0, 100) else games
             val result = jsonObject("count" to games.size, "games" to toJson(truncated))
+            stripJson(result)
             response.send(result.toString(), "application/json")
         }
+    })
+    // favicon.ico
+    server.getLogError("/favicon.ico", {
+        response.setFileResponseHeaders(serveFile("/images/stats.gif"), "image/gif")
     })
     // static javascript files
     server.getLogError("/js/:file", {
@@ -75,7 +83,44 @@ fun main(args: Array<String>) {
 
 fun serveFile(path: String): String {
     val u = Substrate::class.java.getResource(path)
+    println(u)
     return u?.file ?: "html/error.html"
 }
 
+fun stripJson(obj: JsonObject) {
+    stripGames(obj["games"] as JsonArray)
+}
+
+fun stripGames(games: JsonArray) {
+    games.forEach { stripGame(it as JsonObject) }
+}
+
+fun stripGame(game: JsonObject) {
+    game.remove("minPlayers")
+    game.remove("maxPlayers")
+    stripGeeks(game["geeks"] as JsonArray)
+}
+
+fun stripGeeks(geeks: JsonArray) {
+    geeks.forEach { stripGeek(it as JsonObject) }
+}
+
+fun stripGeek(geek: JsonObject) {
+    geek.remove("comment")
+    geek.remove("prevowned")
+    geek.remove("preordered")
+    geek.remove("trade")
+    geek.set("wtb", geek["wanttobuy"])
+    geek.set("wtp", geek["wanttoplay"])
+    geek.remove("wanttobuy")
+    geek.remove("wanttoplay")
+    val flags = JsonArray()
+    listOf("wtb", "wtp", "want", "owned").forEach {
+        if (geek[it].asString == "true") {
+            flags.add(it)
+        }
+        geek.remove(it)
+    }
+    geek.set("flags", flags)
+}
 
