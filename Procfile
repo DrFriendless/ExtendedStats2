@@ -1,1 +1,1 @@
-web:    java friendless.stats2.httpd.Main
+web:    java -server -cp target/classes friendless.stats2.httpd.MainKt
