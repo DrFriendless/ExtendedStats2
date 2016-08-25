@@ -15,8 +15,7 @@
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-runtime:1.0.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.0.3" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.exposed:exposed:0.5.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.h2database:h2:1.4.186" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.exposed:exposed:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.wasabi:wasabi:0.1.182" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: io.netty:netty-all:4.0.34.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: commons-codec:commons-codec:1.9" level="project" />

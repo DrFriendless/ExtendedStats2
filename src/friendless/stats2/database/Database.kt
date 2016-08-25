@@ -2,14 +2,22 @@ package friendless.stats2.database
 
 import friendless.stats2.Config
 import org.jetbrains.exposed.sql.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Connecting to the database and enhancing the given functionality. Nothing application-specific here.
  */
 open class Database(config: Config) {
+    companion object {
+        // make sure we only initialise once because of a bug in exposed.
+        val initialised = AtomicBoolean(false)
+    }
     init {
-        val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
-        org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
+        if (!initialised.get()) {
+            val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
+            org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
+            initialised.set(true)
+        }
     }
 }
 
