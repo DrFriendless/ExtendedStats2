@@ -1,7 +1,7 @@
-package friendless.stats2.database
+package com.drfriendless.stats2.database
 
-import friendless.stats2.Config
-import friendless.stats2.model.*
+import com.drfriendless.stats2.model.*
+import com.drfriendless.stats2.Config
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime

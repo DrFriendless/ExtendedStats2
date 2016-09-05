@@ -1,22 +1,23 @@
-package friendless.stats2.httpd
+package com.drfriendless.stats2.httpd
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import friendless.stats2.Config
-import friendless.stats2.httpd.handlers.JsonHandler
-import friendless.stats2.model.toJson
-import friendless.stats2.selectors.parseSelector
-import friendless.stats2.database.Substrate
+import com.drfriendless.stats2.Config
+import com.drfriendless.stats2.httpd.handlers.JsonHandler
+import com.drfriendless.stats2.model.toJson
+import com.drfriendless.stats2.selectors.parseSelector
+import com.drfriendless.stats2.database.Substrate
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.wasabi.app.AppConfiguration
 import org.wasabi.app.AppServer
+import org.wasabi.routing.RouteHandler
 
-fun AppServer.getLogError(path: kotlin.String, vararg handlers: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): kotlin.Unit {
+fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit): Unit {
     val logger = LoggerFactory.getLogger("handler")
-    fun wrap(f: org.wasabi.routing.RouteHandler.() -> kotlin.Unit): org.wasabi.routing.RouteHandler.() -> kotlin.Unit {
+    fun wrap(f: RouteHandler.() -> Unit): RouteHandler.() -> Unit {
         return {
             try {
                 f()
@@ -81,31 +82,31 @@ fun main(args: Array<String>) {
     server.start()
 }
 
-fun serveFile(path: String): String {
+private fun serveFile(path: String): String {
     val u = Substrate::class.java.getResource(path)
     println(u)
     return u?.file ?: "html/error.html"
 }
 
-fun stripJson(obj: JsonObject) {
+private fun stripJson(obj: JsonObject) {
     stripGames(obj["games"] as JsonArray)
 }
 
-fun stripGames(games: JsonArray) {
+private fun stripGames(games: JsonArray) {
     games.forEach { stripGame(it as JsonObject) }
 }
 
-fun stripGame(game: JsonObject) {
+private fun stripGame(game: JsonObject) {
     game.remove("minPlayers")
     game.remove("maxPlayers")
     stripGeeks(game["geeks"] as JsonArray)
 }
 
-fun stripGeeks(geeks: JsonArray) {
+private fun stripGeeks(geeks: JsonArray) {
     geeks.forEach { stripGeek(it as JsonObject) }
 }
 
-fun stripGeek(geek: JsonObject) {
+private fun stripGeek(geek: JsonObject) {
     geek.remove("comment")
     geek.remove("prevowned")
     geek.remove("preordered")

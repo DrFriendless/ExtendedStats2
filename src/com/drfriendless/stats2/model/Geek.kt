@@ -1,8 +1,8 @@
-package friendless.stats2.model
+package com.drfriendless.stats2.model
 
 import com.google.gson.JsonObject
-import friendless.stats2.database.Games
-import friendless.stats2.database.Geeks
+import com.drfriendless.stats2.database.Games
+import com.drfriendless.stats2.database.Geeks
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 

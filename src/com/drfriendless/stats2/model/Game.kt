@@ -1,10 +1,10 @@
-package friendless.stats2.model
+package com.drfriendless.stats2.model
 
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
-import friendless.stats2.database.Games
-import friendless.stats2.database.GeekGames
+import com.drfriendless.stats2.database.Games
+import com.drfriendless.stats2.database.GeekGames
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 

@@ -1,4 +1,4 @@
-package friendless.stats2
+package com.drfriendless.stats2
 
 import java.util.*
 

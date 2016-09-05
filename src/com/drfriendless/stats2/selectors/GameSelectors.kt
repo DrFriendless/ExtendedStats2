@@ -1,8 +1,8 @@
-package friendless.stats2.selectors
+package com.drfriendless.stats2.selectors
 
-import friendless.stats2.database.Games
-import friendless.stats2.model.Game
-import friendless.stats2.database.Substrate
+import com.drfriendless.stats2.database.Games
+import com.drfriendless.stats2.model.Game
+import com.drfriendless.stats2.database.Substrate
 import org.jetbrains.exposed.sql.AndOp
 
 /**

@@ -1,6 +1,6 @@
-package friendless.stats2.selectors
+package com.drfriendless.stats2.selectors
 
-import friendless.stats2.model.Game
+import com.drfriendless.stats2.model.Game
 import kotlin.reflect.KClass
 import kotlin.reflect.primaryConstructor
 

@@ -1,4 +1,4 @@
-package friendless.stats2.model
+package com.drfriendless.stats2.model
 
 import com.github.salomonbrys.kotson.jsonArray
 import com.google.gson.JsonArray

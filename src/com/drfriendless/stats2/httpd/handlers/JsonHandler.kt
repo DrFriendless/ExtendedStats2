@@ -1,11 +1,11 @@
-package friendless.stats2.httpd.handlers
+package com.drfriendless.stats2.httpd.handlers
 
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonElement
-import friendless.stats2.model.toJson
-import friendless.stats2.selectors.Selector
-import friendless.stats2.database.Substrate
+import com.drfriendless.stats2.model.toJson
+import com.drfriendless.stats2.selectors.Selector
+import com.drfriendless.stats2.database.Substrate
 
 /**
  * Handler for requests which return JSON.

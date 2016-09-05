@@ -1,7 +1,7 @@
-package friendless.stats2.model
+package com.drfriendless.stats2.model
 
 import com.google.gson.JsonObject
-import friendless.stats2.database.Plays
+import com.drfriendless.stats2.database.Plays
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import java.sql.Date
@@ -17,7 +17,7 @@ class Play(val geek: String, val game: Int, val playDate: Date,
     constructor(row: ResultRow) : this(
             row[Plays.geek],
             row[Plays.game],
-            java.sql.Date(row[Plays.playDate].toDate().time),
+            Date(row[Plays.playDate].toDate().time),
             row[Plays.quantity],
             row[Plays.basegame],
             row[Plays.raters],

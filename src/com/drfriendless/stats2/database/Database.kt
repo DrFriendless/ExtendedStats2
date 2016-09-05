@@ -1,7 +1,9 @@
-package friendless.stats2.database
+package com.drfriendless.stats2.database
 
-import friendless.stats2.Config
+import com.drfriendless.stats2.Config
+import com.drfriendless.stats2.database.GeekGames
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -15,7 +17,7 @@ open class Database(config: Config) {
     init {
         if (!initialised.get()) {
             val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
-            org.jetbrains.exposed.sql.Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
+            Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
             initialised.set(true)
         }
     }

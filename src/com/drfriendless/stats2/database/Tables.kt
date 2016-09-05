@@ -1,4 +1,4 @@
-package friendless.stats2.database
+package com.drfriendless.stats2.database
 
 import org.jetbrains.exposed.sql.Table
 
