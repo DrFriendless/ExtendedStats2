@@ -13,10 +13,15 @@ class Config() {
     val dbPort: String by prop
     val dbName: String by prop
     val serverTimeZone: String by prop
+    val countries: String by prop
 
     init {
         Config::class.java.getResourceAsStream("/config.properties").use {
             prop.load(it)
         }
+    }
+
+    fun allowedCountries(): List<String> {
+        return countries.split(",").map { it.trim() }
     }
 }

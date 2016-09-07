@@ -28,7 +28,12 @@ class Substrate(config: Config): Database(config) {
     }
     val australians: Iterable<User> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
-            Users.slice(Users.columns).select { Users.country eq "Australia" }.orderBy(Users.geek, true).map { row -> User(row) }.toList()
+            Users.
+                    slice(Users.columns).
+                    select { Users.country inList config.allowedCountries() }.
+                    orderBy(Users.geek, true).
+                    map { row -> User(row) }.
+                    toList()
         }
     }
     val expansionData: List<Pair<Int, Int>> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
