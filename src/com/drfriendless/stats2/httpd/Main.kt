@@ -78,7 +78,7 @@ fun main(args: Array<String>) {
         response.setFileResponseHeaders(serveFile("/html/collection.html"), "text/html")
     })
     // HTML for the Chooser application
-    server.getLogError("/chooser/:userid", {
+    server.getLogError("/chooser", {
         response.setFileResponseHeaders(serveFile("/html/chooser.html"), "text/html")
     })
 
