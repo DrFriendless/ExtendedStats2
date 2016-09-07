@@ -35,6 +35,10 @@ fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit
  */
 fun main(args: Array<String>) {
     val httpdConfig = AppConfiguration()
+    if (System.getProperty("PORT") != null) {
+        // use the port assigned by Heroku.
+        httpdConfig.port = Integer.parseInt(System.getProperty("PORT"))
+    }
     val server = AppServer(httpdConfig)
     val config = Config()
     val logger = LoggerFactory.getLogger("main")
