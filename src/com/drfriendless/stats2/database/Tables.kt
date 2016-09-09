@@ -28,10 +28,6 @@ object Games: Table("games") {
     val maxPlayers = integer("maxPlayers")
 }
 
-object Geeks: Table("geeks") {
-    val username = varchar("username", 128)
-}
-
 object Users: Table("users") {
     val geek = varchar("geek", 128)
     val bggid = integer("bggid")
@@ -46,7 +42,7 @@ object Expansions: Table("expansions") {
 object Plays: Table("plays") {
     val game = integer("game")
     val geek = varchar("geek", 128)
-    val playDate = date("playDate")
+    val playDate = varchar("playDate", 10)
     val quantity = integer("quantity")
     val basegame = integer("basegame")
     val raters = integer("raters")

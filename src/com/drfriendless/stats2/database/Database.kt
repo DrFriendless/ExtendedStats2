@@ -1,10 +1,8 @@
 package com.drfriendless.stats2.database
 
 import com.drfriendless.stats2.Config
-import com.drfriendless.stats2.database.GeekGames
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.Database
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Connecting to the database and enhancing the given functionality. Nothing application-specific here.
@@ -12,13 +10,22 @@ import java.util.concurrent.atomic.AtomicBoolean
 open class Database(config: Config) {
     companion object {
         // make sure we only initialise once because of a bug in exposed.
-        val initialised = AtomicBoolean(false)
+        val initialised = mutableSetOf<String>()
+
+        fun initialised(url: String): Boolean {
+            synchronized(initialised) {
+                val result = url in initialised
+                initialised.add(url)
+                return result
+            }
+        }
     }
+
+    private lateinit var db: org.jetbrains.exposed.sql.Database
     init {
-        if (!initialised.get()) {
-            val url = "jdbc:mysql://${config.dbHost}:${config.dbPort}/${config.dbName}?serverTimezone=${config.serverTimeZone}"
-            Database.connect(url, "com.mysql.cj.jdbc.Driver", config.dbUser, config.dbPasswd)
-            initialised.set(true)
+        val url = config.dbURL
+        if (!initialised(url)) {
+            db = Database.connect(url, config.driver, config.dbUser, config.dbPasswd)
         }
     }
 }
@@ -30,3 +37,4 @@ class FloatColumnType(val scale: Int, val precision: Int): ColumnType() {
     override fun sqlType(): String = "FLOAT($scale, $precision)"
     override fun valueFromDB(value: Any): Any = super.valueFromDB(value).let { (it as? Float) ?: it }
 }
+

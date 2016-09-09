@@ -16,12 +16,13 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             url: '/json/geeks'
         }).success(function(data, status) {
             vm.geeks = data["geeks"];
-            vm.players = vm.geeks.filter(function(geek) { return geek.geek == vm.geek });
+            console.log(vm.geeks)
+            vm.players = [];
         });
     };
     vm.getPlayers = function() {
         if (typeof vm.players == "undefined") return [];
-        return vm.players.map(function(geek) { return geek.username });
+        return vm.players;
     };
     vm.baseGamesURL = function() {
         var players = vm.getPlayers();
@@ -60,9 +61,9 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         var i;
         for (i=0; i<vm.players.length; i++) {
             more[index++] = "annotate";
-            more[index++]= vm.players[i].username;
+            more[index++]= vm.players[i];
             more[index++] = "playsAnnotate";
-            more[index++]= vm.players[i].username;
+            more[index++]= vm.players[i];
         }
         more[index++] = "score";
         more[index++] = vm.evaluationFunction.key;

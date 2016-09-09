@@ -12,21 +12,16 @@ import java.util.*
  * Caching layer above the database.
  */
 class Substrate(config: Config): Database(config) {
-    private val name = ThreadLocal<String>()
-    init {
-        name.set("substrate" + System.currentTimeMillis())
-    }
-
     private val geekGamesByGeek: MutableMap<String, Iterable<Game>> = hashMapOf()
     private val playsByGeek: MutableMap<String, Iterable<Play>> = hashMapOf()
     private val gamesByBggid: MutableMap<Int, Game> = hashMapOf()
     private val baseGamesByExpansion: MutableMap<Int, Set<Int>> = hashMapOf()
-    val geeks: Iterable<Geek> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+    val geeks: Iterable<String> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
-            Geeks.slice(Geeks.username).selectAll().map { row -> Geek(row) }.toList()
+            Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toList()
         }
     }
-    val australians: Iterable<User> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+    val users: Iterable<User> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
             Users.
                     slice(Users.columns).
@@ -72,17 +67,16 @@ class Substrate(config: Config): Database(config) {
 
     fun plays(geek: String): Iterable<Play> {
         return playsByGeek.findOrAdd(geek) {
-            val never = DateTime(1900,1,1,1,1)
             reconstructPlays(Plays.
                     slice(Plays.columns).
-                    select { (Plays.geek eq geek) and (Plays.playDate greater never) }.
+                    select { (Plays.geek eq geek) and (Plays.playDate like "1%") }.
                     map { row -> Play(row) }.
                     toList())
         }
     }
 
     fun reconstructPlays(ps: List<Play>): List<Play> {
-        val playsByDate = HashMap<Date, MutableList<Play>>()
+        val playsByDate = HashMap<String, MutableList<Play>>()
         ps.groupByTo(playsByDate) { it.playDate }
         playsByDate.values.forEach { inferExtraPlaysForADate(it) }
         return playsByDate.flatMap { it.value }

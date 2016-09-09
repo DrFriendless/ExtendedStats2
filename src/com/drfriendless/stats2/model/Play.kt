@@ -9,7 +9,7 @@ import java.sql.Date
 /**
  * Created by john on 9/07/16.
  */
-class Play(val geek: String, val game: Int, val playDate: Date,
+class Play(val geek: String, val game: Int, val playDate: String,
            var quantity: Int, val basegame: Int, val raters: Int,
            val ratingsTotal: Int, val location: String,
            val expansions: Set<Int> = setOf()): ModelObject {
@@ -17,7 +17,7 @@ class Play(val geek: String, val game: Int, val playDate: Date,
     constructor(row: ResultRow) : this(
             row[Plays.geek],
             row[Plays.game],
-            Date(row[Plays.playDate].toDate().time),
+            row[Plays.playDate],
             row[Plays.quantity],
             row[Plays.basegame],
             row[Plays.raters],

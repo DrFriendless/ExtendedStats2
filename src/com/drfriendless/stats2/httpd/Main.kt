@@ -5,15 +5,21 @@ import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.drfriendless.stats2.Config
+import com.drfriendless.stats2.database.*
 import com.drfriendless.stats2.httpd.handlers.JsonHandler
 import com.drfriendless.stats2.model.toJson
 import com.drfriendless.stats2.selectors.parseSelector
-import com.drfriendless.stats2.database.Substrate
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import org.wasabi.app.AppConfiguration
 import org.wasabi.app.AppServer
 import org.wasabi.routing.RouteHandler
+import java.io.File
+import java.io.FileOutputStream
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
 
 fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit): Unit {
     val logger = LoggerFactory.getLogger("handler")
@@ -30,17 +36,64 @@ fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit
     this.get(path, *wrapped)
 }
 
+fun extractDatabase(config: Config) {
+    val u = Substrate::class.java.getResource("/data/stats2db.jar")
+    if (u == null) {
+        System.err.println("Database file not found. Looking for /data/stats2db.jar on the classpath.")
+    } else {
+        System.err.println("Extracting database.")
+        Database(config)
+        transaction {
+            listOf(GeekGames, Games, Plays, Users, Expansions).forEach { table ->
+                if (table.exists()) SchemaUtils.drop(table)
+            }
+        }
+        val jf = JarFile(u.file)
+        val csv = Regex("(^[a-z]+).csv")
+        jf.entries().iterator().forEach { entry ->
+            println("Found ${entry.name}.")
+            transaction {
+                warnLongQueriesDuration = 10000
+                csv.matchEntire(entry.name)?.let {
+                    extractEntry(entry, jf)
+                    when (it.groupValues[1]) {
+                        "expansions" -> exec("create table expansions (basegame int, expansion int) as select * from csvread('/tmp/expansions.csv', 'BASEGAME,EXPANSION')")
+                        "games" -> exec("create table games (bggid int primary key, name varchar(256), minplayers int, maxplayers int) as select * from csvread('/tmp/games.csv', 'BGGID,NAME,MINPLAYERS,MAXPLAYERS', 'escape=\\')")
+                        "geekgames" -> exec("create table geekgames (geek varchar(256), game int, rating real, owned boolean, want boolean, wish int, trade boolean, comment varchar(1024), prevowned boolean, wanttobuy boolean, wanttoplay boolean, preordered boolean) as select * from csvread('/tmp/geekgames.csv', 'GEEK,GAME,RATING,OWNED,WANT,WISH,TRADE,COMMENT,PREVOWNED,WANTTOBUY,WANTTOPLAY,PREORDERED')")
+                        "plays" -> exec("create table plays (game int, geek varchar(256), playdate varchar(10), quantity int, basegame int, raters int, ratingstotal int, location varchar(256)) as select * from csvread('/tmp/plays.csv', 'GAME,GEEK,PLAYDATE,QUANTITY,BASEGAME,RATERS,RATINGSTOTAL,LOCATION')")
+                        "users" -> exec("create table users (geek varchar(128), bggid int, country varchar(64)) as select * from csvread('/tmp/users.csv', 'GEEK,BGGID,COUNTRY')")
+                        else ->
+                            System.err.println("Found unknown CSV file: ${entry.name}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun extractEntry(entry: JarEntry, jf: JarFile) {
+    val f = File("/tmp/${entry.name}")
+    val fos = FileOutputStream(f)
+    val str = jf.getInputStream(entry)
+    while (str.available() > 0) {
+        fos.write(str.read())
+    }
+    fos.close()
+    str.close()
+}
+
 /**
  * Web server main process.
  */
 fun main(args: Array<String>) {
+    val config = Config("/inmemory.properties")
+    extractDatabase(config)
     val httpdConfig = AppConfiguration()
     if (System.getenv("PORT") != null) {
         // use the port assigned by Heroku.
         httpdConfig.port = Integer.parseInt(System.getenv("PORT"))
     }
     val server = AppServer(httpdConfig)
-    val config = Config()
     val logger = LoggerFactory.getLogger("main")
     server.get("/", {
         response.send("Hello World!")
@@ -88,7 +141,6 @@ fun main(args: Array<String>) {
 
 private fun serveFile(path: String): String {
     val u = Substrate::class.java.getResource(path)
-    println(u)
     return u?.file ?: "html/error.html"
 }
 

@@ -1,7 +1,6 @@
 package com.drfriendless.stats2.model
 
 import com.google.gson.JsonObject
-import com.drfriendless.stats2.database.Geeks
 import com.drfriendless.stats2.database.Users
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
@@ -16,12 +15,12 @@ class User(val name: String, val bggid: Int, val country: String): ModelObject {
 
     override fun <T> get(key: Column<T>): Any {
         return when (key) {
-            Geeks.username -> name
+            Users.geek -> name
             else -> 0
         }
     }
 
     override fun toJson(vararg omit: Column<*>): JsonObject {
-        return toJson(this, Geeks.columns, *omit)
+        return toJson(this, Users.columns, *omit)
     }
 }

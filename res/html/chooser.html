@@ -24,26 +24,6 @@
             <td>
                 <div class="gamelist">
                     <div class="header">
-                        <H2>Available Games</H2>
-                        Showing {{ctrl.baseGames.length}} of {{ctrl.baseGameCount}}...
-                    </div>
-                    <table>
-                        <tbody>
-                        <tr ng-repeat="game in ctrl.baseGames | orderBy:'name'">
-                            <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
-                                <div class="commentary">
-                                    <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: owned">{{geek.geek}} </p><br>
-                                </div>
-                            </TD>
-                            </TD>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </td>
-            <td>
-                <div class="gamelist">
-                    <div class="header">
                         <H2>What You Should Play</H2>
                         Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
                     </div>
@@ -80,9 +60,9 @@
                     <h3>Players</h3>
                     <!-- Select some players -->
                     <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" close-on-select="true" title="Players who will play">
-                        <ui-select-match placeholder="Select players...">{{$item.username}}</ui-select-match>
+                        <ui-select-match placeholder="Select players...">{{$item}}</ui-select-match>
                         <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
-                            {{geek.username}}
+                            {{geek}}
                         </ui-select-choices>
                     </ui-select>
                     <P></P>

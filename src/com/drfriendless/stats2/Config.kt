@@ -5,18 +5,16 @@ import java.util.*
 /**
  * The config file which tells us about the environment we're hosted in.
  */
-class Config() {
+class Config(filename: String = "/config.properties") {
     val prop = Properties()
+    val driver: String by prop
     val dbUser: String by prop
     val dbPasswd: String by prop
-    val dbHost: String by prop
-    val dbPort: String by prop
-    val dbName: String by prop
-    val serverTimeZone: String by prop
     val countries: String by prop
+    val dbURL: String by prop
 
     init {
-        Config::class.java.getResourceAsStream("/config.properties").use {
+        Config::class.java.getResourceAsStream(filename).use {
             prop.load(it)
         }
     }
