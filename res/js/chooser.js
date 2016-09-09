@@ -38,18 +38,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         return '/json/games?q=' + components.join() + ',expansions,minus'
     };
 
-    vm.loadBaseGames = function() {
-        var url = vm.baseGamesURL();
-        if (url == null) return;
-        var httpRequest = $http({
-            method: 'GET',
-            url: url
-        }).success(function(data, status) {
-            vm.baseGames = data["games"];
-            vm.baseGameCount = data["count"];
-        });
-    };
-
     vm.loadBestGames = function() {
         var url = vm.baseGamesURL();
         if (url == null) return;
@@ -97,7 +85,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     vm.numPlayers = 1;
 
     vm.loadGeeks();
-    vm.loadBaseGames();
     vm.loadBestGames();
     // when the player list changes, reload the games collection
     $scope.$watch(
@@ -106,7 +93,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         function(newValue, oldValue) {
             if (typeof newValue == "undefined") return;
             vm.numPlayers = newValue.length;
-            vm.loadBaseGames();
             vm.loadBestGames();
         }
     );
@@ -121,7 +107,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         function() { return vm.numPlayers; },
 
         function(newValue, oldValue) {
-            vm.loadBaseGames();
             vm.loadBestGames();
         }
     );
@@ -129,7 +114,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
         function() { return vm.baseOption; },
 
         function(newValue, oldValue) {
-            vm.loadBaseGames();
             vm.loadBestGames();
         }
     );

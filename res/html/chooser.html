@@ -18,13 +18,12 @@
 </head>
 <body>
 <div id="chooser" ng-controller="ChooserCtrl as ctrl">
-    <H1>What Should We Play?</H1>
     <table class="columns">
         <tr>
             <td>
                 <div class="gamelist">
                     <div class="header">
-                        <H2>What You Should Play</H2>
+                        <H2>What Should We Play?</H2>
                         Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
                     </div>
                     <table>
@@ -59,7 +58,7 @@
 
                     <h3>Players</h3>
                     <!-- Select some players -->
-                    <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" close-on-select="true" title="Players who will play">
+                    <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" reset-search-input="true" title="Players who will play">
                         <ui-select-match placeholder="Select players...">{{$item}}</ui-select-match>
                         <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
                             {{geek}}

@@ -18,17 +18,7 @@ class Substrate(config: Config): Database(config) {
     private val baseGamesByExpansion: MutableMap<Int, Set<Int>> = hashMapOf()
     val geeks: Iterable<String> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
-            Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toList()
-        }
-    }
-    val users: Iterable<User> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        transaction {
-            Users.
-                    slice(Users.columns).
-                    select { Users.country inList config.allowedCountries() }.
-                    orderBy(Users.geek, true).
-                    map { row -> User(row) }.
-                    toList()
+            Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toList().toSortedSet()
         }
     }
     val expansionData: List<Pair<Int, Int>> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
