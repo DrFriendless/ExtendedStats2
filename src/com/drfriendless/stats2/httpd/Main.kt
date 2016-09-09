@@ -57,16 +57,22 @@ fun extractDatabase(config: Config) {
                 csv.matchEntire(entry.name)?.let {
                     extractEntry(entry, jf)
                     when (it.groupValues[1]) {
-                        "expansions" -> exec("create table expansions (basegame int, expansion int) as select * from csvread('/tmp/expansions.csv', 'BASEGAME,EXPANSION')")
-                        "games" -> exec("create table games (bggid int primary key, name varchar(256), minplayers int, maxplayers int) as select * from csvread('/tmp/games.csv', 'BGGID,NAME,MINPLAYERS,MAXPLAYERS', 'escape=\\')")
-                        "geekgames" -> exec("create table geekgames (geek varchar(256), game int, rating real, owned boolean, want boolean, wish int, trade boolean, comment varchar(1024), prevowned boolean, wanttobuy boolean, wanttoplay boolean, preordered boolean) as select * from csvread('/tmp/geekgames.csv', 'GEEK,GAME,RATING,OWNED,WANT,WISH,TRADE,COMMENT,PREVOWNED,WANTTOBUY,WANTTOPLAY,PREORDERED')")
-                        "plays" -> exec("create table plays (game int, geek varchar(256), playdate varchar(10), quantity int, basegame int, raters int, ratingstotal int, location varchar(256)) as select * from csvread('/tmp/plays.csv', 'GAME,GEEK,PLAYDATE,QUANTITY,BASEGAME,RATERS,RATINGSTOTAL,LOCATION')")
-                        "users" -> exec("create table users (geek varchar(128), bggid int, country varchar(64)) as select * from csvread('/tmp/users.csv', 'GEEK,BGGID,COUNTRY')")
+                        "expansions" -> exec("create memory table expansions (basegame int, expansion int) as select * from csvread('/tmp/expansions.csv', 'BASEGAME,EXPANSION')")
+                        "games" -> exec("create memory table games (bggid int primary key, name varchar(256), minplayers int, maxplayers int) as select * from csvread('/tmp/games.csv', 'BGGID,NAME,MINPLAYERS,MAXPLAYERS', 'escape=\\')")
+                        "geekgames" -> exec("create memory table geekgames (geek varchar(256), game int, rating real, owned boolean, want boolean, wish int, trade boolean, comment varchar(1024), prevowned boolean, wanttobuy boolean, wanttoplay boolean, preordered boolean) as select * from csvread('/tmp/geekgames.csv', 'GEEK,GAME,RATING,OWNED,WANT,WISH,TRADE,COMMENT,PREVOWNED,WANTTOBUY,WANTTOPLAY,PREORDERED')")
+                        "plays" -> exec("create memory table plays (game int, geek varchar(256), playdate varchar(10), quantity int, basegame int, raters int, ratingstotal int, location varchar(256)) as select * from csvread('/tmp/plays.csv', 'GAME,GEEK,PLAYDATE,QUANTITY,BASEGAME,RATERS,RATINGSTOTAL,LOCATION')")
+                        "users" -> exec("create memory table users (geek varchar(128), bggid int, country varchar(64)) as select * from csvread('/tmp/users.csv', 'GEEK,BGGID,COUNTRY')")
                         else ->
                             System.err.println("Found unknown CSV file: ${entry.name}")
                     }
                 }
             }
+        }
+        transaction {
+            println("Indexing data")
+            exec("CREATE UNIQUE HASH INDEX GAMESPK ON GAMES(BGGID)")
+            exec("CREATE HASH INDEX PLAYSGEEK ON PLAYS(GEEK)")
+            exec("CREATE HASH INDEX GEEKGAMESGEEK ON GEEKGAMES(GEEK)")
         }
     }
 }

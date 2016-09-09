@@ -126,9 +126,7 @@ class Substrate(config: Config): Database(config) {
             val toGet = bggids.filter { !gamesByBggid.containsKey(it) }
             if (!toGet.isEmpty()) {
                 val games = Games.
-                        slice(Games.columns).
-                        select { InListOrNotInListOp(Games.bggid, toGet) }.
-                        map { row -> Game(row) }
+                        slice(Games.columns).selectAll().map { row -> Game(row) }
                 games.forEach { gamesByBggid[it.bggid] = it }
                 toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6) }
             }
