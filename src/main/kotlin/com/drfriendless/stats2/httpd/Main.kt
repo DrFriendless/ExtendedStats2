@@ -92,7 +92,7 @@ private fun extractEntry(entry: JarEntry, jf: JarFile) {
  * Web server main process.
  */
 fun main(args: Array<String>) {
-    println(args.asList())
+//    println(com.mysql.jdbc.Driver.class)
     val configFile = args[0]
     val config = Config(configFile)
     if ("true" == config.extract) extractDatabase(config)
@@ -101,6 +101,7 @@ fun main(args: Array<String>) {
         // use the port assigned by Heroku.
         httpdConfig.port = Integer.parseInt(System.getenv("PORT"))
     }
+    println("httpd ${httpdConfig.port}")
     val server = AppServer(httpdConfig)
     val logger = LoggerFactory.getLogger("main")
     server.get("/", {

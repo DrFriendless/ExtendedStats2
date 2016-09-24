@@ -21,6 +21,16 @@ class Substrate(config: Config): Database(config) {
             Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toList().toSortedSet()
         }
     }
+    val australians: Iterable<String> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        transaction {
+            Users.
+                    slice(Users.geek).
+                    select { Users.country inList config.allowedCountries() }.
+                    orderBy(Users.geek, true).
+                    map { it[Users.geek]}.
+                    toList()
+        }
+    }
     val expansionData: List<Pair<Int, Int>> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
             Expansions.
@@ -57,16 +67,17 @@ class Substrate(config: Config): Database(config) {
 
     fun plays(geek: String): Iterable<Play> {
         return playsByGeek.findOrAdd(geek) {
+            val never = DateTime(1900,1,1,1,1)
             reconstructPlays(Plays.
                     slice(Plays.columns).
-                    select { (Plays.geek eq geek) and (Plays.playDate like "1%") }.
+                    select { (Plays.geek eq geek) and (Plays.playDate greater never) }.
                     map { row -> Play(row) }.
                     toList())
         }
     }
 
     fun reconstructPlays(ps: List<Play>): List<Play> {
-        val playsByDate = HashMap<String, MutableList<Play>>()
+        val playsByDate = HashMap<Date, MutableList<Play>>()
         ps.groupByTo(playsByDate) { it.playDate }
         playsByDate.values.forEach { inferExtraPlaysForADate(it) }
         return playsByDate.flatMap { it.value }

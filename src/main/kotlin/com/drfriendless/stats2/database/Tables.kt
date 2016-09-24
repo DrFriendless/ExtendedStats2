@@ -42,7 +42,7 @@ object Expansions: Table("expansions") {
 object Plays: Table("plays") {
     val game = integer("game")
     val geek = varchar("geek", 128)
-    val playDate = varchar("playDate", 10)
+    val playDate = date("playDate")
     val quantity = integer("quantity")
     val basegame = integer("basegame")
     val raters = integer("raters")

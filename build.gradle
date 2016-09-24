@@ -35,6 +35,7 @@ dependencies {
     compile 'org.wasabifx:wasabi:0.3.57'
     compile 'org.slf4j:slf4j-api:1.6.4'
     compile 'org.jetbrains.exposed:exposed:0.6.5'
+    compile 'mysql:mysql-connector-java:5.1.6'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile 'junit:junit:4.12'
 }

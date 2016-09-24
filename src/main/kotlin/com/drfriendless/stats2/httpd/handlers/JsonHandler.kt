@@ -17,7 +17,7 @@ class JsonHandler(val substrate: Substrate) {
 
     fun geeks(): JsonElement {
         return jsonObject(
-                "geeks" to jsonArray(substrate.geeks)
+                "geeks" to jsonArray(substrate.australians)
         )
     }
 }
