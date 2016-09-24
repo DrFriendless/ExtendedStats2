@@ -13,9 +13,9 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
-import org.wasabi.app.AppConfiguration
-import org.wasabi.app.AppServer
-import org.wasabi.routing.RouteHandler
+import org.wasabifx.wasabi.app.AppConfiguration
+import org.wasabifx.wasabi.app.AppServer
+import org.wasabifx.wasabi.routing.RouteHandler
 import java.io.File
 import java.io.FileOutputStream
 import java.util.jar.JarEntry
@@ -92,8 +92,10 @@ private fun extractEntry(entry: JarEntry, jf: JarFile) {
  * Web server main process.
  */
 fun main(args: Array<String>) {
-    val config = Config("/inmemory.properties")
-    extractDatabase(config)
+    println(args.asList())
+    val configFile = args[0]
+    val config = Config(configFile)
+    if ("true" == config.extract) extractDatabase(config)
     val httpdConfig = AppConfiguration()
     if (System.getenv("PORT") != null) {
         // use the port assigned by Heroku.
@@ -102,7 +104,7 @@ fun main(args: Array<String>) {
     val server = AppServer(httpdConfig)
     val logger = LoggerFactory.getLogger("main")
     server.get("/", {
-        response.send("Hello World!")
+        response.redirect("/chooser")
     })
     server.getLogError("/json/geeks", {
         val substrate = Substrate(config)
