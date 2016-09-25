@@ -26,6 +26,7 @@ object Games: Table("games") {
     val name = varchar("name", 256)
     val minPlayers = integer("minPlayers")
     val maxPlayers = integer("maxPlayers")
+    val playTime = integer("playTime")
 }
 
 object Users: Table("users") {

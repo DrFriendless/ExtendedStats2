@@ -139,7 +139,7 @@ class Substrate(config: Config): Database(config) {
                 val games = Games.
                         slice(Games.columns).selectAll().map { row -> Game(row) }
                 games.forEach { gamesByBggid[it.bggid] = it }
-                toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6) }
+                toGet.filter { !gamesByBggid.containsKey(it) }.forEach { gamesByBggid[it] = Game(it, "No Such Game", 1, 6, 0) }
             }
             return bggids.associate { it.to(gamesByBggid[it]!!) }
         }

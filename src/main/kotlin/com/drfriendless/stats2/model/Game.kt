@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.ResultRow
 /**
  * Created by john on 30/06/16.
  */
-class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers: Int,
+class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers: Int, val playTime: Int,
            val geekGames: MutableMap<String, GeekGame> = mutableMapOf(),
            val plays: MutableMap<String, Int> = mutableMapOf()): ModelObject {
     var score = 0
@@ -20,7 +20,8 @@ class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers
             row[Games.bggid],
             row[Games.name],
             row[Games.minPlayers],
-            row[Games.maxPlayers]) {
+            row[Games.maxPlayers],
+            row[Games.playTime]) {
     }
 
     override fun <T> get(key: Column<T>): Any {
@@ -29,6 +30,7 @@ class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers
             Games.name -> name
             Games.minPlayers -> minPlayers
             Games.maxPlayers -> maxPlayers
+            Games.playTime -> playTime
             else -> 0
         }
     }
