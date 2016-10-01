@@ -12,14 +12,18 @@ import com.drfriendless.stats2.selectors.parseSelector
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import org.wasabifx.wasabi.app.AppConfiguration
 import org.wasabifx.wasabi.app.AppServer
+import org.wasabifx.wasabi.protocol.http.Response
+import org.wasabifx.wasabi.protocol.http.StatusCodes
 import org.wasabifx.wasabi.routing.RouteHandler
 import java.io.File
 import java.io.FileOutputStream
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import javax.activation.MimetypesFileTypeMap
 
 fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit): Unit {
     val logger = LoggerFactory.getLogger("handler")
@@ -92,7 +96,10 @@ private fun extractEntry(entry: JarEntry, jf: JarFile) {
  * Web server main process.
  */
 fun main(args: Array<String>) {
-//    println(com.mysql.jdbc.Driver.class)
+    if (args.size == 0) {
+        println("Usage: stats2 <configFile>")
+        return
+    }
     val configFile = args[0]
     val config = Config(configFile)
     if ("true" == config.extract) extractDatabase(config)
@@ -101,7 +108,7 @@ fun main(args: Array<String>) {
         // use the port assigned by Heroku.
         httpdConfig.port = Integer.parseInt(System.getenv("PORT"))
     }
-    println("httpd ${httpdConfig.port}")
+    println("httpd running on port ${httpdConfig.port}")
     val server = AppServer(httpdConfig)
     val logger = LoggerFactory.getLogger("main")
     server.get("/", {
@@ -125,31 +132,44 @@ fun main(args: Array<String>) {
     })
     // favicon.ico
     server.getLogError("/favicon.ico", {
-        response.setFileResponseHeaders(serveFile("/images/stats.gif"), "image/gif")
+        response.returnFileContents("/images/stats.gif", "image/gif")
     })
     // static javascript files
     server.getLogError("/js/:file", {
-        response.setFileResponseHeaders(serveFile(request.path), "application/javascript")
+        response.returnFileContents(request.path, "application/javascript")
     })
     // static CSS files
     server.getLogError("/css/:file", {
-        response.setFileResponseHeaders(serveFile(request.path), "text/css")
+        response.returnFileContents(request.path, "text/css")
     })
     // HTML for a user's collection
     server.getLogError("/collection/:userid", {
-        response.setFileResponseHeaders(serveFile("/html/collection.html"), "text/html")
+        response.returnFileContents("/html/collection.html", "text/html")
     })
     // HTML for the Chooser application
     server.getLogError("/chooser", {
-        response.setFileResponseHeaders(serveFile("/html/chooser.html"), "text/html")
+        response.returnFileContents("/html/chooser.html", "text/html")
     })
 
     logger.info("Starting Stats2Server")
     server.start()
 }
 
+fun Response.returnFileContents(path: String, contentType: String) {
+    val u = Substrate::class.java.getResource(path)
+    println("returnFileContents $path $u")
+    if (u != null) {
+        val text = u.readText()
+        this.contentLength = text.length.toLong()
+        send(text, contentType)
+    } else {
+        setStatus(StatusCodes.NotFound)
+    }
+}
+
 private fun serveFile(path: String): String {
     val u = Substrate::class.java.getResource(path)
+    println("serveFile $path $u")
     return u?.file ?: "html/error.html"
 }
 

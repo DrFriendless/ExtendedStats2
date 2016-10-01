@@ -1,5 +1,6 @@
 package com.drfriendless.stats2
 
+import java.io.FileReader
 import java.util.*
 
 /**
@@ -15,7 +16,7 @@ class Config(filename: String) {
     val extract: String by prop
 
     init {
-        Config::class.java.getResourceAsStream(filename).use {
+        FileReader(filename).use {
             println(it)
             prop.load(it)
         }

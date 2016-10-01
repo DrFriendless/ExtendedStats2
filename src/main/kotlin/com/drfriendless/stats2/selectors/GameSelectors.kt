@@ -17,7 +17,7 @@ open class ExpansionSelector(substrate: Substrate): Selector(substrate) {
 
 val PLAYERS_DESCRIPTOR = SelectorDescriptor("players", 1, 0, PlayersSelector::class, SelectorType.GAME)
 open class PlayersSelector(substrate: Substrate, players: String): Selector(substrate) {
-    val playerCount: Int = Integer.parseInt(players)
+    val playerCount: Int = Integer.parseInt(if (players.length > 0) players else "4")
 
     override fun select(): Iterable<Game> {
         return substrate.gamesWhere { AndOp(Games.minPlayers lessEq playerCount, Games.maxPlayers greaterEq playerCount) }

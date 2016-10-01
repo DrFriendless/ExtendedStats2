@@ -1,0 +1,74 @@
+#! /bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          stats2d
+# Required-Start:    $syslog $local_fs mysql
+# Required-Stop:     $syslog $local_fs mysql
+# Should-Start:
+# Should-Stop:
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: Extended Stats httpd
+# Description:       stats2d provides additional functionality for BGG Extended Stats.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON="/usr/local/stats2/stats2.sh"
+NAME=stats2
+DESC="Extended Stats httpd"
+DAEMON_OPTS=""
+RUN_AS_USER=john
+
+set -e
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	echo start-stop-daemon --start --verbose -m --pidfile /var/run/$NAME.pid --exec "$DAEMON" -- $DAEMON_OPTS
+	start-stop-daemon --start --verbose -m --pidfile /var/run/$NAME.pid --exec "$DAEMON" -- $DAEMON_OPTS
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	start-stop-daemon --stop --oknodo --verbose --pidfile /var/run/$NAME.pid --exec $DAEMON
+	echo "$NAME."
+	;;
+  force-reload)
+	# check whether $DAEMON is running. If so, restart
+	start-stop-daemon --stop --test --verbose --pidfile /var/run/$NAME.pid --exec $DAEMON && $0 restart || exit 0
+	;;
+  restart)
+	echo -n "Restarting $DESC: "
+	start-stop-daemon --stop --oknodo --verbose --pidfile /var/run/$NAME.pid --exec $DAEMON
+	sleep 1
+	start-stop-daemon --start --verbose --pidfile /var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS
+	echo "$NAME."
+	;;
+  status)
+	if [ -s /var/run/$NAME.pid ]; then
+            RUNNING=$(cat /var/run/$NAME.pid)
+            if [ -d /proc/$RUNNING ]; then
+                if [ $(readlink /proc/$RUNNING/exe) = $DAEMON ]; then
+                    echo "$NAME is running."
+                    exit 0
+                fi
+            fi
+
+            # No such PID, or executables don't match
+            echo "$NAME is not running, but pidfile existed."
+            rm /var/run/$NAME.pid
+            exit 1
+        else
+            rm -f /var/run/$NAME.pid
+            echo "$NAME not running."
+            exit 1
+        fi
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

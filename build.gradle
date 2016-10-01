@@ -15,7 +15,7 @@ buildscript {
 
 sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
-    main.resources.srcDirs += 'src/main/res'
+    main.resources.srcDirs += 'src/main/resources'
     test.java.srcDirs += 'src/test/kotlin'
 }
 
@@ -38,4 +38,11 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.6'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile 'junit:junit:4.12'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.drfriendless.stats2.httpd.MainKt'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
