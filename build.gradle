@@ -21,6 +21,7 @@ sourceSets {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url "http://dl.bintray.com/wasabifx/wasabifx"
     }
@@ -36,6 +37,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.6.4'
     compile 'org.jetbrains.exposed:exposed:0.6.5'
     compile 'mysql:mysql-connector-java:5.1.6'
+    compile 'com.drfriendless:statsdb:0.1'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile 'junit:junit:4.12'
 }

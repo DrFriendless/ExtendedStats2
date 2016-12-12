@@ -3,6 +3,7 @@ package com.drfriendless.stats2.database
 import com.drfriendless.stats2.Config
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.Database
+import com.drfriendless.statsdb.database.GeekGames
 
 /**
  * Connecting to the database and enhancing the given functionality. Nothing application-specific here.

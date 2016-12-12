@@ -13,7 +13,6 @@ class Config(filename: String) {
     val dbPasswd: String by prop
     val countries: String by prop
     val dbURL: String by prop
-    val extract: String by prop
 
     init {
         FileReader(filename).use {

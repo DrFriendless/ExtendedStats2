@@ -2,6 +2,7 @@ package com.drfriendless.stats2.database
 
 import com.drfriendless.stats2.model.*
 import com.drfriendless.stats2.Config
+import com.drfriendless.statsdb.database.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -27,8 +28,7 @@ class Substrate(config: Config): Database(config) {
                     slice(Users.geek).
                     select { Users.country inList config.allowedCountries() }.
                     orderBy(Users.geek, true).
-                    map { it[Users.geek]}.
-                    toList()
+                    map { it[Users.geek]}
         }
     }
     val expansionData: List<Pair<Int, Int>> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
@@ -136,6 +136,7 @@ class Substrate(config: Config): Database(config) {
         synchronized(gamesByBggid) {
             val toGet = bggids.filter { !gamesByBggid.containsKey(it) }
             if (!toGet.isEmpty()) {
+                // todo add inlist!
                 val games = Games.
                         slice(Games.columns).selectAll().map { row -> Game(row) }
                 games.forEach { gamesByBggid[it.bggid] = it }
@@ -156,8 +157,7 @@ class Substrate(config: Config): Database(config) {
     }
 
     fun gamesWhere(where: SqlExpressionBuilder.()-> Op<Boolean>): Iterable<Game> {
-        val bggIds =
-                Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }.toSet()
+        val bggIds = Games.slice(Games.bggid).select(where).map { row -> row[Games.bggid] }
         return games(bggIds).values
     }
 }

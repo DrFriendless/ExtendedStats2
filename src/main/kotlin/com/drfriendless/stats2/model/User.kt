@@ -1,14 +1,14 @@
 package com.drfriendless.stats2.model
 
 import com.google.gson.JsonObject
-import com.drfriendless.stats2.database.Users
+import com.drfriendless.statsdb.database.Users
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 
 /**
  * Created by john on 21/07/16.
  */
-class User(val name: String, val bggid: Int, val country: String): ModelObject {
+class User(val name: String, val bggid: Int, val country: String?): ModelObject {
     constructor(row: ResultRow): this(
             row[Users.geek], row[Users.bggid], row[Users.country]) {
     }

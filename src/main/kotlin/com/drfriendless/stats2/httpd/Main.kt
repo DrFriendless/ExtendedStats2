@@ -9,21 +9,13 @@ import com.drfriendless.stats2.database.*
 import com.drfriendless.stats2.httpd.handlers.JsonHandler
 import com.drfriendless.stats2.model.toJson
 import com.drfriendless.stats2.selectors.parseSelector
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import org.wasabifx.wasabi.app.AppConfiguration
 import org.wasabifx.wasabi.app.AppServer
 import org.wasabifx.wasabi.protocol.http.Response
 import org.wasabifx.wasabi.protocol.http.StatusCodes
 import org.wasabifx.wasabi.routing.RouteHandler
-import java.io.File
-import java.io.FileOutputStream
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import javax.activation.MimetypesFileTypeMap
 
 fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit): Unit {
     val logger = LoggerFactory.getLogger("handler")
@@ -40,58 +32,6 @@ fun AppServer.getLogError(path: String, vararg handlers: RouteHandler.() -> Unit
     this.get(path, *wrapped)
 }
 
-fun extractDatabase(config: Config) {
-    val u = Substrate::class.java.getResource("/data/stats2db.jar")
-    if (u == null) {
-        System.err.println("Database file not found. Looking for /data/stats2db.jar on the classpath.")
-    } else {
-        System.err.println("Extracting database.")
-        Database(config)
-        transaction {
-            listOf(GeekGames, Games, Plays, Users, Expansions).forEach { table ->
-                if (table.exists()) SchemaUtils.drop(table)
-            }
-        }
-        val jf = JarFile(u.file)
-        val csv = Regex("(^[a-z]+).csv")
-        jf.entries().iterator().forEach { entry ->
-            println("Found ${entry.name}.")
-            transaction {
-                warnLongQueriesDuration = 10000
-                csv.matchEntire(entry.name)?.let {
-                    extractEntry(entry, jf)
-                    when (it.groupValues[1]) {
-                        "expansions" -> exec("create memory table expansions (basegame int, expansion int) as select * from csvread('/tmp/expansions.csv', 'BASEGAME,EXPANSION')")
-                        "games" -> exec("create memory table games (bggid int primary key, name varchar(256), minplayers int, maxplayers int) as select * from csvread('/tmp/games.csv', 'BGGID,NAME,MINPLAYERS,MAXPLAYERS', 'escape=\\')")
-                        "geekgames" -> exec("create memory table geekgames (geek varchar(256), game int, rating real, owned boolean, want boolean, wish int, trade boolean, comment varchar(1024), prevowned boolean, wanttobuy boolean, wanttoplay boolean, preordered boolean) as select * from csvread('/tmp/geekgames.csv', 'GEEK,GAME,RATING,OWNED,WANT,WISH,TRADE,COMMENT,PREVOWNED,WANTTOBUY,WANTTOPLAY,PREORDERED')")
-                        "plays" -> exec("create memory table plays (game int, geek varchar(256), playdate varchar(10), quantity int, basegame int, raters int, ratingstotal int, location varchar(256)) as select * from csvread('/tmp/plays.csv', 'GAME,GEEK,PLAYDATE,QUANTITY,BASEGAME,RATERS,RATINGSTOTAL,LOCATION')")
-                        "users" -> exec("create memory table users (geek varchar(128), bggid int, country varchar(64)) as select * from csvread('/tmp/users.csv', 'GEEK,BGGID,COUNTRY')")
-                        else ->
-                            System.err.println("Found unknown CSV file: ${entry.name}")
-                    }
-                }
-            }
-        }
-        transaction {
-            println("Indexing data")
-            exec("CREATE UNIQUE HASH INDEX GAMESPK ON GAMES(BGGID)")
-            exec("CREATE HASH INDEX PLAYSGEEK ON PLAYS(GEEK)")
-            exec("CREATE HASH INDEX GEEKGAMESGEEK ON GEEKGAMES(GEEK)")
-        }
-    }
-}
-
-private fun extractEntry(entry: JarEntry, jf: JarFile) {
-    val f = File("/tmp/${entry.name}")
-    val fos = FileOutputStream(f)
-    val str = jf.getInputStream(entry)
-    while (str.available() > 0) {
-        fos.write(str.read())
-    }
-    fos.close()
-    str.close()
-}
-
 /**
  * Web server main process.
  */
@@ -102,7 +42,6 @@ fun main(args: Array<String>) {
     }
     val configFile = args[0]
     val config = Config(configFile)
-    if ("true" == config.extract) extractDatabase(config)
     val httpdConfig = AppConfiguration()
     if (System.getenv("PORT") != null) {
         // use the port assigned by Heroku.
@@ -149,6 +88,9 @@ fun main(args: Array<String>) {
     // HTML for the Chooser application
     server.getLogError("/chooser", {
         response.returnFileContents("/html/chooser.html", "text/html")
+    })
+    server.getLogError("/war", {
+        response.returnFileContents("/html/war.html", "text/html")
     })
 
     logger.info("Starting Stats2Server")

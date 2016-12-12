@@ -1,7 +1,7 @@
 package com.drfriendless.stats2.model
 
+import com.drfriendless.statsdb.database.Plays
 import com.google.gson.JsonObject
-import com.drfriendless.stats2.database.Plays
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import java.sql.Date
