@@ -28,21 +28,21 @@ class GeekGame(val geek: String, val game: Int, val rating: Double,
             ) {
     }
 
-    override fun <T> get(key: Column<T>): Any {
+    override fun <T> get(key: Column<T>): T {
         return when (key) {
-            GeekGames.geek -> geek
-            GeekGames.game -> game
-            GeekGames.rating -> Math.round(rating * 10) / 10.0
-            GeekGames.owned -> owned
-            GeekGames.want -> want
-            GeekGames.trade -> trade
-            GeekGames.wish -> wish
-            GeekGames.comment -> comment
-            GeekGames.prevowned -> prevowned
-            GeekGames.wanttobuy -> wanttobuy
-            GeekGames.wanttoplay -> wanttoplay
-            GeekGames.preordered -> preordered
-            else -> 0
+            GeekGames.geek -> geek as T
+            GeekGames.game -> game as T
+            GeekGames.rating -> (Math.round(rating * 10) / 10.0) as T
+            GeekGames.owned -> owned as T
+            GeekGames.want -> want as T
+            GeekGames.trade -> trade as T
+            GeekGames.wish -> wish as T
+            GeekGames.comment -> comment as T
+            GeekGames.prevowned -> prevowned as T
+            GeekGames.wanttobuy -> wanttobuy as T
+            GeekGames.wanttoplay -> wanttoplay as T
+            GeekGames.preordered -> preordered as T
+            else -> 0 as T
         }
     }
 

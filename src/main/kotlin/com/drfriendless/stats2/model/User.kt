@@ -13,10 +13,10 @@ class User(val name: String, val bggid: Int, val country: String?): ModelObject 
             row[Users.geek], row[Users.bggid], row[Users.country]) {
     }
 
-    override fun <T> get(key: Column<T>): Any {
+    override fun <T> get(key: Column<T>): T {
         return when (key) {
-            Users.geek -> name
-            else -> 0
+            Users.geek -> name as T
+            else -> 0 as T
         }
     }
 

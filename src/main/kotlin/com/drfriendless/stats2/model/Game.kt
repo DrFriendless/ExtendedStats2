@@ -24,14 +24,14 @@ class Game(val bggid: Int, val name: String, val minPlayers: Int, val maxPlayers
             row[Games.playTime]) {
     }
 
-    override fun <T> get(key: Column<T>): Any {
+    override fun <T> get(key: Column<T>): T {
         return when (key) {
-            Games.bggid -> bggid
-            Games.name -> name
-            Games.minPlayers -> minPlayers
-            Games.maxPlayers -> maxPlayers
-            Games.playTime -> playTime
-            else -> 0
+            Games.bggid -> bggid as T
+            Games.name -> name as T
+            Games.minPlayers -> minPlayers as T
+            Games.maxPlayers -> maxPlayers as T
+            Games.playTime -> playTime as T
+            else -> 0 as T
         }
     }
 

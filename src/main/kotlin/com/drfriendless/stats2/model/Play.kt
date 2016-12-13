@@ -26,17 +26,17 @@ class Play(val geek: String, val game: Int, val playDate: Date,
     ) {
     }
 
-    override fun <T> get(key: Column<T>): Any {
+    override fun <T> get(key: Column<T>): T {
         return when (key) {
-            Plays.geek -> geek
-            Plays.game -> game
-            Plays.playDate -> playDate
-            Plays.quantity -> quantity
-            Plays.basegame -> basegame
-            Plays.raters -> raters
-            Plays.ratingsTotal -> ratingsTotal
-            Plays.location -> location
-            else -> 0
+            Plays.geek -> geek as T
+            Plays.game -> game as T
+            Plays.playDate -> playDate as T
+            Plays.quantity -> quantity as T
+            Plays.basegame -> basegame as T
+            Plays.raters -> raters as T
+            Plays.ratingsTotal -> ratingsTotal as T
+            Plays.location -> location as T
+            else -> 0 as T
         }
     }
 

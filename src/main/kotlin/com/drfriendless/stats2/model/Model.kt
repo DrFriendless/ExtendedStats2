@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.Column
  * Created by john on 30/06/16.
  */
 interface ModelObject {
-    fun <T> get(key: Column<T>): Any
+    operator fun <T> get(key: Column<T>): T
 
     fun toJson(vararg omit: Column<*>): JsonObject
 }
@@ -17,7 +17,7 @@ interface ModelObject {
 fun toJson(mo: ModelObject, columns: Iterable<Column<*>>, vararg omit: Column<*>): JsonObject {
     val result = JsonObject()
     columns.filter { !omit.contains(it) }.forEach {
-        val v = mo.get(it)
+        val v = mo[it]
         when (v) {
             is String -> result.addProperty(it.name, v)
             is Char -> result.addProperty(it.name, v)
