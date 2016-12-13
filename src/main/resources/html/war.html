@@ -6,6 +6,7 @@
     <link rel="shortcut icon" href="/images/stats.gif" type="image/gif">
     <title>The War Table</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <script type="text/javascript">
@@ -16,14 +17,30 @@
 </head>
 <body>
 <script>
+    String.prototype.format = function () {
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, number) {
+            return typeof args[number] != 'undefined'
+                    ? args[number]
+                    : match
+                    ;
+        });
+    };
+
     function loadWarData() {
         $.get("json/war")
          .done(function(data) {
-             $("#stuff").append(data);
+             var template = $("#jsonTemplate").html();
+             var result = template.format(data);
+             $("#stuff").append(result);
         })
          .fail(function() { console.log("error"); })
     }
     window.onload = function() { loadWarData(); }
+</script>
+
+<script type="text/template" id="jsonTemplate">
+    <pre>{0}</pre>
 </script>
 
 <div class="container">

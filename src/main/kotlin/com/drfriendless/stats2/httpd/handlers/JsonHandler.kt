@@ -25,7 +25,7 @@ class JsonHandler(val substrate: Substrate) {
     fun war(): JsonElement {
         return jsonObject(
                 // TODO
-                "data" to jsonArray(warPageData(substrate.australians))
+                "data" to jsonArray(warPageData(substrate.australians).map { it.toJson() })
         )
     }
 }
