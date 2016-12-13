@@ -57,6 +57,10 @@ fun main(args: Array<String>) {
         val substrate = Substrate(config)
         response.send(JsonHandler(substrate).geeks().toString(), "application/json")
     })
+    server.getLogError("/json/war", {
+        val substrate = Substrate(config)
+        response.send(JsonHandler(substrate).war().toString(), "application/json")
+    })
     server.getLogError("/json/games", {
         val q = request.queryParams["q"] ?: "all"
         val substrate = Substrate(config)

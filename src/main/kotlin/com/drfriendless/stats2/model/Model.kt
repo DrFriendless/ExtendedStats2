@@ -32,3 +32,19 @@ fun toJson(games: Iterable<ModelObject>, vararg omit: Column<*>): JsonArray {
     return jsonArray(games.map { it.toJson(*omit) })
 }
 
+class AugmentedModelObject(val geek: ModelObject, val allColumns: Iterable<Column<*>>) : ModelObject {
+    val extraProps = mutableMapOf<Column<*>, Any>()
+
+    override operator fun <T> get(key: Column<T>): T {
+        return (extraProps[key] ?: geek[key]) as T
+    }
+
+    operator fun <T> set(column: Column<T>, value: T) {
+        extraProps[column] = value as Any
+    }
+
+    override fun toJson(vararg omit: Column<*>): JsonObject {
+        return toJson(this, allColumns, *omit)
+    }
+}
+

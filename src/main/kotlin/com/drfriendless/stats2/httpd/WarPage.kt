@@ -1,13 +1,10 @@
 package com.drfriendless.stats2.httpd
 
-import com.drfriendless.stats2.model.FrontPageGeek
-import com.drfriendless.stats2.model.FrontPageGeeksWithRanks
-import com.drfriendless.stats2.model.ModelObject
-import com.drfriendless.stats2.model.toJson
+import com.drfriendless.stats2.model.*
 import com.drfriendless.statsdb.database.FrontPageGeeks
-import com.google.gson.JsonObject
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Code for the war page.
@@ -39,34 +36,20 @@ fun warPageData(users: Iterable<String>): List<AugmentedModelObject> {
 
 private fun rawFrontPageData(users: Iterable<String>): List<FrontPageGeek> {
     val us = users.toList()
-    return FrontPageGeeks.slice(FrontPageGeeks.columns).select { FrontPageGeeks.geek inList us }.
-            map(::FrontPageGeek).
-            sortedBy { it.geek.toLowerCase() }
-}
-
-class AugmentedModelObject(val geek: ModelObject, val allColumns: Iterable<Column<*>>) : ModelObject {
-    val extraProps = mutableMapOf<Column<*>, Any>()
-
-    override operator fun <T> get(key: Column<T>): T {
-        return (extraProps[key] ?: geek[key]) as T
-    }
-
-    operator fun <T> set(column: Column<T>, value: T) {
-        extraProps[column] = value as Any
-    }
-
-    override fun toJson(vararg omit: Column<*>): JsonObject {
-        return toJson(this, allColumns, *omit)
+    return transaction {
+        FrontPageGeeks.slice(FrontPageGeeks.columns).select { FrontPageGeeks.geek inList us }.
+                map(::FrontPageGeek).
+                sortedBy { it.geek.toLowerCase() }
     }
 }
 
 fun <T: Comparable<T>> addRanks(data: List<AugmentedModelObject>, valCol: Column<T>, rankCol: Column<String>, title: String) {
     val sorted = data.sortedBy { it[valCol] }
     val numRows = sorted.size
-    var lastValue = -1000
+    var lastValue = sorted.map { it[valCol] }.min() ?: return
     var lastRank = 0
     sorted.forEachIndexed { index, t ->
-        val key = t[valCol] as Int
+        val key = t[valCol]
         if (key == lastValue) {
             val percent = Math.ceil(lastRank * 100.0 / numRows)
             t[rankCol] = "$lastRank (top $percent% of $title)"
