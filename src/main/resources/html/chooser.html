@@ -19,72 +19,66 @@
     <script src="/js/chooser.js"></script>
 </head>
 <body>
-<div id="chooser" ng-controller="ChooserCtrl as ctrl">
-    <table class="columns">
-        <tr>
-            <td>
-                <div class="gamelist">
-                    <div class="header">
-                        <H2>What Should We Play?</H2>
-                        Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
-                    </div>
-                    <table>
-                        <tbody>
-                        <tr ng-repeat="game in ctrl.bestGames">
-                            <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
-                                <div class="commentary">
-                                    <b>Playtime:</b>{{game.playTime}} minutes<br>
-                                    <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: owned">{{geek.geek}} </p><br>
-                                    <b>Ratings:</b> <p class="word" ng-repeat="geek in game.geeks | filter: validRating">{{geek.geek}} {{geek.rating}} </p><br>
-                                    <b>Want to play:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttoplay">{{geek.geek}} </p><br>
-                                    <b>Want to buy:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttobuy">{{geek.geek}} </p><br>
-                                    <b>Want in trade:</b> <p class="word" ng-repeat="geek in game.geeks | filter: want">{{geek.geek}} </p><br>
-                                    <b>Plays:</b> <p class="word" ng-repeat="(geek, plays) in game.plays">{{geek}} {{plays}} </p>
-                                </div>
-                            </TD>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </td>
-            <td class="config">
-                <div>
-                    <H3>Collection</H3>
-                    <!-- Choose the base set of games -->
-                    <select
-                            id="baseSelect"
-                            ng-init="ctrl.baseOption = ctrl.baseOptions[0]"
-                            ng-model="ctrl.baseOption"
-                            ng-options="option.name for option in ctrl.baseOptions"
-                            title="Set of games to choose from">
-                    </select>
+<div id="chooser" ng-controller="ChooserCtrl as ctrl" class="container">
+    <div class="row">
+        <div class="col-sm-7 gamelist">
+            <div class="header">
+                <H2>What Should We Play?</H2>
+                Showing {{ctrl.bestGames.length}} of {{ctrl.bestGameCount}}...
+            </div>
+            <table>
+                <tbody>
+                <tr ng-repeat="game in ctrl.bestGames">
+                    <TD><A HREf="https://boardgamegeek.com/boardgame/{{game.bggid}}">{{game.name}}</A>
+                        <div class="commentary">
+                            <b>Playtime:</b>{{game.playTime}} minutes<br>
+                            <b>Owned by:</b> <p class="word" ng-repeat="geek in game.geeks | filter: owned">{{geek.geek}} </p><br>
+                            <b>Ratings:</b> <p class="word" ng-repeat="geek in game.geeks | filter: validRating">{{geek.geek}} {{geek.rating}} </p><br>
+                            <b>Want to play:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttoplay">{{geek.geek}} </p><br>
+                            <b>Want to buy:</b> <p class="word" ng-repeat="geek in game.geeks | filter: wanttobuy">{{geek.geek}} </p><br>
+                            <b>Want in trade:</b> <p class="word" ng-repeat="geek in game.geeks | filter: want">{{geek.geek}} </p><br>
+                            <b>Plays:</b> <p class="word" ng-repeat="(geek, plays) in game.plays">{{geek}} {{plays}} </p>
+                        </div>
+                    </TD>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-5 config well">
+            <H3>Collection</H3>
+            <!-- Choose the base set of games -->
+            <select
+                    id="baseSelect"
+                    ng-init="ctrl.baseOption = ctrl.baseOptions[0]"
+                    ng-model="ctrl.baseOption"
+                    ng-options="option.name for option in ctrl.baseOptions"
+                    title="Set of games to choose from">
+            </select>
 
-                    <h3>Players</h3>
-                    <!-- Select some players -->
-                    <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" reset-search-input="true" title="Players who will play">
-                        <ui-select-match placeholder="Select players...">{{$item}}</ui-select-match>
-                        <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
-                            {{geek}}
-                        </ui-select-choices>
-                    </ui-select>
-                    <P></P>
-                    <label>Player Count:
-                        <input type="number" name="input" ng-model="ctrl.numPlayers" min="1" max="12" required>
-                    </label>
+            <h3>Players</h3>
+            <!-- Select some players -->
+            <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" reset-search-input="true" title="Players who will play">
+                <ui-select-match placeholder="Select players...">{{$item}}</ui-select-match>
+                <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
+                    {{geek}}
+                </ui-select-choices>
+            </ui-select>
+            <P></P>
+            <label>Player Count:
+                <input type="number" name="input" ng-model="ctrl.numPlayers" min="1" max="12" required>
+            </label>
 
-                    <H3>Criteria</H3>
-                    <!-- Choose the evaluation function -->
-                    <select
-                            id="evalSelect"
-                            ng-init="ctrl.evaluationFunction = ctrl.evaluationOptions[0]"
-                            ng-model="ctrl.evaluationFunction"
-                            ng-options="option.name for option in ctrl.evaluationOptions"
-                            title="Evaluation criteria">
-                    </select>
-                </div>
-            </td>
-        </tr>
-    </table>
+            <H3>Criteria</H3>
+            <!-- Choose the evaluation function -->
+            <select
+                    id="evalSelect"
+                    ng-init="ctrl.evaluationFunction = ctrl.evaluationOptions[0]"
+                    ng-model="ctrl.evaluationFunction"
+                    ng-options="option.name for option in ctrl.evaluationOptions"
+                    title="Evaluation criteria">
+            </select>
+        </div>
+    </div>
 </div>
 </body>
 </html>
