@@ -12,13 +12,13 @@ import org.jetbrains.exposed.sql.Table
  *
  * @author John Farrell
  */
-class FrontPageGeek(val geek: String, val totalPlays: Int, val distinctGames: Int, val top50: Int, val the100: Int,
+class FrontPageGeek(val geek: String, val totalPlays: Int, val distinctGames: Int, val top50: Int, val sdj: Int, val the100: Int,
                     val owned: Int, val want: Int, val wish: Int, val trade: Int, val prevOwned: Int, val friendless: Int,
                     val cfm: Float, val utilisation: Float, val tens: Int, val zeros: Int, val ext100: Int, val mv: Int,
                     val hindex: Int): ModelObject {
     constructor(row: ResultRow): this(
             row[FrontPageGeeks.geek], row[FrontPageGeeks.totalPlays], row[FrontPageGeeks.distinctGames],
-            row[FrontPageGeeks.top50], row[FrontPageGeeks.the100], row[FrontPageGeeks.owned], row[FrontPageGeeks.want],
+            row[FrontPageGeeks.top50], row[FrontPageGeeks.sdj], row[FrontPageGeeks.the100], row[FrontPageGeeks.owned], row[FrontPageGeeks.want],
             row[FrontPageGeeks.wish], row[FrontPageGeeks.trade], row[FrontPageGeeks.prevOwned], row[FrontPageGeeks.friendless],
             row[FrontPageGeeks.cfm], row[FrontPageGeeks.utilisation], row[FrontPageGeeks.tens], row[FrontPageGeeks.zeros],
             row[FrontPageGeeks.ext100], row[FrontPageGeeks.mv], row[FrontPageGeeks.hindex]) {
@@ -30,6 +30,7 @@ class FrontPageGeek(val geek: String, val totalPlays: Int, val distinctGames: In
             FrontPageGeeks.totalPlays -> totalPlays as T
             FrontPageGeeks.distinctGames -> distinctGames as T
             FrontPageGeeks.top50 -> top50 as T
+            FrontPageGeeks.sdj -> sdj as T
             FrontPageGeeks.the100 -> the100 as T
             FrontPageGeeks.owned -> owned as T
             FrontPageGeeks.want -> want as T

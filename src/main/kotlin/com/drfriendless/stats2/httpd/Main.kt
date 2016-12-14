@@ -97,6 +97,9 @@ fun main(args: Array<String>) {
     server.getLogError("/chooser", {
         response.returnFileContents("/html/chooser.html", "text/html")
     })
+    server.getLogError("/front", {
+        response.returnFileContents("/html/front.html", "text/html")
+    })
     server.getLogError("/war", {
         response.returnFileContents("/html/war.html", "text/html")
     })

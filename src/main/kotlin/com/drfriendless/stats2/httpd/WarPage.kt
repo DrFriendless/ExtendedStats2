@@ -44,20 +44,22 @@ private fun rawFrontPageData(users: Iterable<String>): List<FrontPageGeek> {
 }
 
 fun <T: Comparable<T>> addRanks(data: List<AugmentedModelObject>, valCol: Column<T>, rankCol: Column<String>, title: String) {
-    val sorted = data.sortedBy { it[valCol] }
+    val sorted = data.sortedBy { it[valCol] }.reversed()
     val numRows = sorted.size
     var lastValue = sorted.map { it[valCol] }.min() ?: return
+    var first = true
     var lastRank = 0
     sorted.forEachIndexed { index, t ->
         val key = t[valCol]
-        if (key == lastValue) {
+        if (!first && key == lastValue) {
             val percent = Math.ceil(lastRank * 100.0 / numRows)
             t[rankCol] = "$lastRank (top $percent% of $title)"
         } else {
-            lastRank++
+            lastRank = index + 1
             val percent = Math.ceil(lastRank * 100.0 / numRows)
             t[rankCol] = "$lastRank (top $percent% of $title)"
             lastValue = key
         }
+        first = false
     }
 }
