@@ -81,6 +81,10 @@ fun main(args: Array<String>) {
     server.getLogError("/js/:file", {
         response.returnFileContents(request.path, "application/javascript")
     })
+    // static images
+    server.getLogError("/images/:file", {
+        response.returnFileContents(request.path, "image/gif")
+    })
     // static CSS files
     server.getLogError("/css/:file", {
         response.returnFileContents(request.path, "text/css")
@@ -105,18 +109,10 @@ fun Response.returnFileContents(path: String, contentType: String) {
     val u = Substrate::class.java.getResource(path)
     println("returnFileContents $path $u")
     if (u != null) {
-        val text = u.readText()
-        this.contentLength = text.length.toLong()
-        send(text, contentType)
+        sendFile(u.file, contentType)
     } else {
         setStatus(StatusCodes.NotFound)
     }
-}
-
-private fun serveFile(path: String): String {
-    val u = Substrate::class.java.getResource(path)
-    println("serveFile $path $u")
-    return u?.file ?: "html/error.html"
 }
 
 private fun stripJson(obj: JsonObject) {

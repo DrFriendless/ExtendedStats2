@@ -7,6 +7,12 @@
     <title>The War Table</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="http://friendlessstats.dtdns.net/scripts/common.js"></script>
+    <script src="http://friendlessstats.dtdns.net/scripts/shadedtable.js"></script>
+    <script src="http://friendlessstats.dtdns.net/scripts/sortable.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/stats2.css">
+    <link rel="stylesheet" type="text/css" href="/css/table.css">
+
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <script type="text/javascript">
@@ -29,25 +35,88 @@
 
     function loadWarData() {
         $.get("json/war")
-         .done(function(data) {
-             var template = $("#jsonTemplate").html();
-             var result = template.format(data);
-             $("#stuff").append(result);
-        })
-         .fail(function() { console.log("error"); })
+                .done(function(data) {
+                    var template = $("#rowTemplate").html();
+                    var rows = data.data;
+                    for (var i = 0; i < rows.length; i++) {
+                        var r = rows[i];
+                        $("#warTableBody").append(template.format(
+                                r.geek,
+                                r.totalPlays, r.playsRank,
+                                r.distinctGames, r.distinctRank,
+                                r.owned, r.ownedRank,
+                                r.want, r.wantRank,
+                                r.wish, r.wishRank,
+                                r.trade, r.tradeRank,
+                                r.sdj, r.sdjRank,
+                                r.top50, r.top50Rank,
+                                r.ext100, r.ext100Rank,
+                                r.mv, r.mvRank,
+                                r.prevOwned, r.prevOwnedRank,
+                                r.friendless, r.friendlessRank,
+                                r.cfm, r.cfmRank,
+                                r.zeros, r.zerosRank,
+                                r.tens, r.tensRank,
+                                r.hindex, r.hindexRank
+                        ));
+                    }
+                    shadedtable_init();
+                })
+                .fail(function() { console.log("error"); })
     }
     window.onload = function() { loadWarData(); }
 </script>
 
-<script type="text/template" id="jsonTemplate">
-    <pre>{0}</pre>
+<script type="text/template" id="rowTemplate">
+    <tr>
+        <td><A href="http://friendlessstats.dtdns.net/dynamic/tabbed/{0}">{0}</A></td>
+        <td class="number" title="{2}">{1}</td>
+        <td class="number" title="{4}">{3}</td>
+        <td class="number" title="{6}">{5}</td>
+        <td class="number" title="{8}">{7}</td>
+        <td class="number" title="{10}">{9}</td>
+        <td class="number" title="{12}">{11}</td>
+        <td class="number" title="{14}">{13}</td>
+        <td class="number" title="{16}">{15}</td>
+        <td class="number" title="{18}">{17}</td>
+        <td class="number" title="{20}">{19}</td>
+        <td class="number" title="{22}">{21}</td>
+        <td class="number" title="{24}">{23}</td>
+        <td class="number" title="{26}">{25}</td>
+        <td class="number" title="{28}">{27}</td>
+        <td class="number" title="{30}">{29}</td>
+        <td class="number" title="{32}">{31}</td>
+    </tr>
 </script>
 
 <div class="container">
     <h1>The War Table</h1>
 
-    <div id="stuff">
-
+    <div class="tableContainer">
+    <table class="sortable shaded" id="warTable">
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Total Plays</th>
+            <th>Distinct Games</th>
+            <th>Owned</th>
+            <th>Want</th>
+            <th>Wish</th>
+            <th>Trade</th>
+            <th>SdJ</th>
+            <th>Top 50</th>
+            <th>Ext 100</th>
+            <th>Most Voted</th>
+            <th>Prev. Owned</th>
+            <th>Friendless</th>
+            <th>CFM</th>
+            <th>0 Plays</th>
+            <th>10+ Plays</th>
+            <th>H-Index</th>
+        </tr>
+        </thead>
+        <tbody id="warTableBody"></tbody>
+    </table>
     </div>
 </div>
 </body>

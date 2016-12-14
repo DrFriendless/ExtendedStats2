@@ -1,1 +1,5 @@
 * {font-family: Helvetica Neue, Arial, sans-serif; }
+
+#warTable td.number {
+    text-align: center;
+}
