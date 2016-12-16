@@ -25,6 +25,10 @@
             height: 90vh;
         }
 
+        #wholepage {
+            width: 90vh;
+        }
+
         /* bootstrap capitalises selected geeks, turn that off */
         .btn {
             text-transform: none;
@@ -32,7 +36,7 @@
     </style>
 </head>
 <body>
-<div class="container">
+<div id="wholepage" class="container">
     <div id="newgames" ng-controller="NewGamesCtrl as ctrl">
         <H1>Rate of Play of New Games</H1>
         <div class="col-sm-8 graphContainer">

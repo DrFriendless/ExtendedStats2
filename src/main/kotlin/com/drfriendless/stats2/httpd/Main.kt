@@ -6,6 +6,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.drfriendless.stats2.Config
 import com.drfriendless.stats2.database.*
+import com.drfriendless.stats2.httpd.handlers.BadRequestException
 import com.drfriendless.stats2.httpd.handlers.JsonHandler
 import com.drfriendless.stats2.model.toJson
 import com.drfriendless.stats2.selectors.parseSelector
@@ -63,7 +64,11 @@ fun main(args: Array<String>) {
     })
     server.getLogError("/json/newgames/:year/:users", {
         val substrate = Substrate(config)
-        response.send("{}", "application/json")
+        try {
+            response.send(JsonHandler(substrate).newGames(request.routeParams["year"], request.routeParams["users"]).toString(), "application/json")
+        } catch (ex: BadRequestException) {
+            response.setStatus(StatusCodes.BadRequest, ex.message as String)
+        }
     })
     server.getLogError("/json/games", {
         val q = request.queryParams["q"] ?: "all"
@@ -117,7 +122,6 @@ fun main(args: Array<String>) {
 
 fun Response.returnFileContents(path: String, contentType: String) {
     val u = Substrate::class.java.getResource(path)
-    println("returnFileContents $path $u")
     if (u != null) {
         sendFile(u.file, contentType)
     } else {

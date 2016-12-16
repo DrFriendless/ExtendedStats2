@@ -19,7 +19,7 @@ class Substrate(config: Config): Database(config) {
     private val baseGamesByExpansion: MutableMap<Int, Set<Int>> = hashMapOf()
     val geeks: Iterable<String> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         transaction {
-            Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toList().toSortedSet()
+            Users.slice(Users.geek).selectAll().map { row -> row[Users.geek] }.toSortedSet()
         }
     }
     val australians: Iterable<String> by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
@@ -36,8 +36,7 @@ class Substrate(config: Config): Database(config) {
             Expansions.
                     slice(Expansions.columns).
                     selectAll().
-                    map { row -> Pair(row[Expansions.basegame], row[Expansions.expansion]) }.
-                    toList()
+                    map { row -> Pair(row[Expansions.basegame], row[Expansions.expansion]) }
         }
     }
     val expansions: Set<Int> by lazy {
@@ -49,7 +48,7 @@ class Substrate(config: Config): Database(config) {
             val ggByGameId = GeekGames.
                     slice(GeekGames.columns).
                     select { GeekGames.geek eq geek }.
-                    map { row -> GeekGame(row) }.
+                    map(::GeekGame).
                     associate { it.game to it }
             val games = games(ggByGameId.keys).values
             games.forEach {
@@ -71,9 +70,21 @@ class Substrate(config: Config): Database(config) {
             reconstructPlays(Plays.
                     slice(Plays.columns).
                     select { (Plays.geek eq geek) and (Plays.playDate greater never) }.
-                    map { row -> Play(row) }.
-                    toList())
+                    map(::Play))
         }
+    }
+
+    fun firstPlays(geek: String): Iterable<Play> {
+        val allPlays = plays(geek).sortedBy { it.playDate }
+        val firstPlays = mutableListOf<Play>()
+        val found = mutableSetOf<Int>()
+        allPlays.forEach { p ->
+            if (!found.contains(p.game)) {
+                firstPlays.add(p)
+                found.add(p.game)
+            }
+        }
+        return firstPlays
     }
 
     fun reconstructPlays(ps: List<Play>): List<Play> {

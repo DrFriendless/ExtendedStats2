@@ -42,18 +42,12 @@ function NewGamesCtrl($scope, $http, $timeout, $interval) {
                                     headerFormat: '<b>{point.key}</b> <br>',
                                     pointFormat: '{point.x: %Y-%m-%d}'
                                 }
+                            },
+                            series: {
+                                turboThreshold: 100000
                             }
                         },
-                        series: [
-                            {
-                                name: "Friendless",
-                                data: [{x:1481806801000,y:1,name:"Puerto Rico"}, {x:1481807401000,y:2,name:"San Juan"}]
-                            },
-                            {
-                                name: "Eduardo",
-                                data: [{x:1481806831000,y:1,name:"Chess"}, {x:1481807431000,y:2,name:"Checkers"}]
-                            }
-                         ],
+                        series: data,
                         xAxis: { type: 'datetime', title: { text: "Start Time"} }
                     });
                 });
