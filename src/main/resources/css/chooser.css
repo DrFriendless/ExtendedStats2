@@ -3,6 +3,11 @@
     text-transform: none;
 }
 
+#chooser {
+    height: 90vh;
+    overflow: auto;
+}
+
 #chooser h1 {
     padding-left: 80px;
     padding-top: 20px;
@@ -22,9 +27,6 @@ table.columns td.config {
 }
 
 div.gamelist table {
-    height:760px;
-    max-height:760px;
-    overflow:auto;
     padding-bottom:3px;
     display: block;
 }
