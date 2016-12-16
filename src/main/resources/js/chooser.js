@@ -16,7 +16,6 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             url: '/json/geeks'
         }).success(function(data, status) {
             vm.geeks = data["geeks"];
-            console.log(vm.geeks)
             vm.players = [];
         });
     };
@@ -63,7 +62,7 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
             vm.bestGames = data["games"];
             vm.bestGameCount = data["count"];
         });
-    }
+    };
 
     vm.baseOptions = [
         { "name": "Owned by any player", "key": "owned"},
@@ -120,10 +119,10 @@ function ChooserCtrl($scope, $http, $timeout, $interval) {
     $scope.validRating = function(v,i,a) {
         return v.rating > 0;
     };
-    $scope.owned = function(geek) { return geek.flags.indexOf('owned') >= 0 }
-    $scope.wanttoplay = function(geek) { return geek.flags.indexOf('wtp') >= 0 }
-    $scope.wanttobuy = function(geek) { return geek.flags.indexOf('wtb') >= 0 }
-    $scope.want = function(geek) { return geek.flags.indexOf('want') >= 0 }
+    $scope.owned = function(geek) { return geek.flags.indexOf('owned') >= 0 };
+    $scope.wanttoplay = function(geek) { return geek.flags.indexOf('wtp') >= 0 };
+    $scope.wanttobuy = function(geek) { return geek.flags.indexOf('wtb') >= 0 };
+    $scope.want = function(geek) { return geek.flags.indexOf('want') >= 0 };
 }
 
 app.controller('ChooserCtrl', ChooserCtrl);

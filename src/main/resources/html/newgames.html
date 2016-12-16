@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="newgames">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    <link rel="shortcut icon" href="/images/stats.gif" type="image/gif">
+    <title>Rate of Play of New Games</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.2.0/sandstone/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://angular-ui.github.io/ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-sanitize.js"></script>
+    <script src="https://angular-ui.github.io/ui-select/dist/select.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="/js/newgames.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/stats2.css">
+    <style type="text/css">
+        #graph {
+            height: 90vh;
+        }
+
+        /* bootstrap capitalises selected geeks, turn that off */
+        .btn {
+            text-transform: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="newgames" ng-controller="NewGamesCtrl as ctrl">
+        <H1>Rate of Play of New Games</H1>
+        <div class="col-sm-8 graphContainer">
+            <div id="graph">
+
+            </div>
+        </div>
+        <div class="col-sm-4 config well">
+            <h3>Choose Players</h3>
+            <!-- Select some players -->
+            <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" reset-search-input="true" title="Players">
+                <ui-select-match placeholder="Select players...">{{$item}}</ui-select-match>
+                <ui-select-choices repeat="geek in ctrl.geeks | filter:$select.search">
+                    {{geek}}
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+</body>
+</html>

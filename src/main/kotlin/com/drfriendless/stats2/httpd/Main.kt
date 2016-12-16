@@ -61,6 +61,10 @@ fun main(args: Array<String>) {
         val substrate = Substrate(config)
         response.send(JsonHandler(substrate).war().toString(), "application/json")
     })
+    server.getLogError("/json/newgames/:year/:users", {
+        val substrate = Substrate(config)
+        response.send("{}", "application/json")
+    })
     server.getLogError("/json/games", {
         val q = request.queryParams["q"] ?: "all"
         val substrate = Substrate(config)
@@ -99,6 +103,9 @@ fun main(args: Array<String>) {
     })
     server.getLogError("/front", {
         response.returnFileContents("/html/front.html", "text/html")
+    })
+    server.getLogError("/newgames", {
+        response.returnFileContents("/html/newgames.html", "text/html")
     })
     server.getLogError("/war", {
         response.returnFileContents("/html/war.html", "text/html")
