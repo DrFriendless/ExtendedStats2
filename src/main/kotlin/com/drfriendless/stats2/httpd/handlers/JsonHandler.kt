@@ -32,14 +32,6 @@ class JsonHandler(val substrate: Substrate) {
         )
     }
 
-    //    {
-//        name: "Friendless",
-//        data: [{x:1481806801000,y:1,name:"Puerto Rico"}, {x:1481807401000,y:2,name:"San Juan"}]
-//    },
-//    {
-//        name: "Eduardo",
-//        data: [{x:1481806831000,y:1,name:"Chess"}, {x:1481807431000,y:2,name:"Checkers"}]
-//    }
     fun newGames(yearParam: String?, usersParam: String?): JsonElement {
         if (yearParam == null) throw BadRequestException("No start year given")
         if (usersParam == null) throw BadRequestException("No users given")
@@ -48,7 +40,7 @@ class JsonHandler(val substrate: Substrate) {
         } catch (ex: NumberFormatException) {
             throw BadRequestException("Invalid year")
         }
-        val users = usersParam.split(",").map(String::trim)
+        val users = usersParam.replace("%20", " ").split(",").map(String::trim)
         if (users.isEmpty()) throw BadRequestException("No users specified.")
         val series = mutableListOf<JsonObject>()
         val cal = GregorianCalendar()
