@@ -26,7 +26,8 @@
         }
 
         #wholepage {
-            width: 90vh;
+            width: 95%;
+            margin: 0 auto;
         }
 
         /* bootstrap capitalises selected geeks, turn that off */
@@ -39,12 +40,12 @@
 <div id="wholepage" class="container">
     <div id="newgames" ng-controller="NewGamesCtrl as ctrl">
         <H1>Rate of Play of New Games</H1>
-        <div class="col-sm-8 graphContainer">
+        <div class="col-sm-9 graphContainer">
             <div id="graph">
 
             </div>
         </div>
-        <div class="col-sm-4 config well">
+        <div class="col-sm-3 config well">
             <h3>Choose Players</h3>
             <!-- Select some players -->
             <ui-select id="playersSelect" multiple ng-model="ctrl.players" theme="bootstrap" reset-search-input="true" title="Players">
